@@ -185,4 +185,54 @@ describe Braspag::Connection do
       end
     end
   end
+
+  describe "#savon_client" do
+    let(:wsdl_uri)        { 'http://localhost?wsdl' }
+    let(:proxy)           { nil }
+    let(:global_settings) { {} }
+
+    before do
+      Braspag.proxy_address = proxy
+      Braspag.savon_global_options = global_settings
+    end
+
+    context "with local setting" do
+      it "should set the settings on client" do
+        Savon.should_receive(:client).with(:wsdl => wsdl_uri, :logger_level => :info)
+
+        Braspag::Connection.clone.instance.savon_client(wsdl_uri, :logger_level => :info)
+      end
+    end
+
+    context "with proxy address set" do
+      let(:proxy) { 'http://some.proxy.com:3444' }
+
+      it "should set the proxy on client" do
+        Savon.should_receive(:client).with(:wsdl => wsdl_uri, :proxy => proxy)
+
+        Braspag::Connection.clone.instance.savon_client(wsdl_uri)
+      end
+    end
+
+    context "with global setting" do
+      let(:global_settings) { {:log => false} }
+
+      it "should set the settings on client" do
+        Savon.should_receive(:client).with(:wsdl => wsdl_uri, :log => false)
+
+        Braspag::Connection.clone.instance.savon_client(wsdl_uri)
+      end
+    end
+
+    context "with local setting, global settings and proxy" do
+      let(:proxy) { 'http://some.proxy.com:3444' }
+      let(:global_settings) { {:log => false} }
+
+      it "should set the settings and proxy on client" do
+        Savon.should_receive(:client).with(:wsdl => wsdl_uri, :proxy => proxy, :log => false, :logger_level => :info)
+
+        Braspag::Connection.clone.instance.savon_client(wsdl_uri, :logger_level => :info)
+      end
+    end
+  end
 end

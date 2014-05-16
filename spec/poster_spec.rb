@@ -37,6 +37,7 @@ describe Braspag::Poster do
     end
 
     it "should not set the proxy if the proxy_address is not set" do
+      Braspag.stub(:proxy_address)
       request.should_not_receive(:proxy=)
       subject.do_post(:foo, {})
     end

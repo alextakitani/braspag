@@ -42,9 +42,7 @@ module Braspag
 
 
      client = savon_client(self.save_protected_card_url)
-     response = client.request(:web, :save_credit_card) do
-       soap.body = data
-     end
+     response = client.call(:save_credit_card, :message => data)
 
       response.to_hash[:save_credit_card_response][:save_credit_card_result]
 
@@ -94,9 +92,7 @@ module Braspag
       end
 
       client = savon_client(self.just_click_shop_url)
-      response = client.request(:web, :just_click_shop) do
-        soap.body = data
-      end
+      response = client.call(:just_click_shop, :message => data)
 
       response.to_hash[:just_click_shop_response][:just_click_shop_result]
 
@@ -151,10 +147,8 @@ module Braspag
       Braspag::Connection.instance.protected_card_url + JUST_CLICK_SHOP_URI
     end
 
-    def self.savon_client url
-      s = Savon::Client.new(url)
-      s.http.proxy = Braspag.proxy_address if Braspag.proxy_address
-      s
+    def self.savon_client(url)
+      Braspag::Connection.instance.savon_client url
     end
   end
 end

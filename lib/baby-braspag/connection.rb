@@ -46,5 +46,12 @@ module Braspag
     def homologation?
       @environment == 'homologation'
     end
+
+    def savon_client(url, options = {})
+      options = options.merge(Braspag.savon_global_options)
+      options = options.merge(:proxy  => Braspag::proxy_address) if !Braspag::proxy_address.blank?
+      options = options.merge(:wsdl => url)
+      Savon.client(options)
+    end
   end
 end

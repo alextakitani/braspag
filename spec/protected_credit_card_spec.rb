@@ -10,20 +10,6 @@ describe Braspag::ProtectedCreditCard do
     Braspag::Connection.stub(:instance => @connection)
     Braspag.proxy_address = nil
   end
-  context "savon_client with proxy addres set" do
-    let (:savon_double) {double('Savon')}
-    before do
-      @http = double("HTTP")
-      Savon::Client.stub(:new).and_return savon_double
-      savon_double.stub(:http).and_return @http
-      Braspag.proxy_address = "http://some.proxy.com:3444"
-    end
-    it "should set the http proxy" do
-      @http.should_receive(:proxy=).with "http://some.proxy.com:3444"
-
-      Braspag::ProtectedCreditCard.savon_client("url")
-    end
-  end
 
   describe ".save" do
     let(:params) do
@@ -69,8 +55,8 @@ describe Braspag::ProtectedCreditCard do
         Braspag::ProtectedCreditCard.should_receive(:save_protected_card_url)
         Braspag::ProtectedCreditCard.should_receive(:check_protected_card_params)
                            .and_return(true)
-        Savon::Client.should_receive(:new).and_return(savon_double)
-        savon_double.should_receive(:request).and_return(response)
+        @connection.should_receive(:savon_client).and_return(savon_double)
+        savon_double.should_receive(:call).and_return(response)
 
         @response = Braspag::ProtectedCreditCard.save(params)
       end
@@ -106,8 +92,8 @@ describe Braspag::ProtectedCreditCard do
                             .and_return(true)
         Braspag::ProtectedCreditCard.should_receive(:save_protected_card_url)
                             .and_return(save_protected_card_url)
-        Savon::Client.should_receive(:new).and_return(savon_double)
-        savon_double.should_receive(:request).and_return(response)
+        @connection.should_receive(:savon_client).and_return(savon_double)
+        savon_double.should_receive(:call).and_return(response)
 
         @response = Braspag::ProtectedCreditCard.save(params)
       end
@@ -151,9 +137,9 @@ describe Braspag::ProtectedCreditCard do
       EOXML
     end
 
-    before do
-      Braspag.logger.stub(:info)
-    end
+    let(:logger) { mock(:info => nil) }
+    before { Braspag.logger = logger }
+
     it "should raise an error when just click key is not valid" do
       Braspag::ProtectedCreditCard.should_receive(:valid_just_click_key?)
                          .with("bla")
@@ -212,76 +198,75 @@ describe Braspag::ProtectedCreditCard do
         attr_accessor :response
         attr_reader :method
 
-        def request(web, method, &block)
-          @method = method
-          instance_eval &block
+        def call(method, options, &block)
+          @method  = method
+          @options = options
 
           @response
         end
 
-        def soap
-          @soap ||= OpenStruct.new
+        def options
+          OpenStruct.new(@options || {})
         end
       end
 
       before :each do
         @savon_client_test = SavonClientTest.new
         @savon_client_test.response = {:just_click_shop_response => {}}
-        Savon::Client.stub(:new).with('https://www.cartaoprotegido.com.br/Services/TestEnvironment/CartaoProtegido.asmx?wsdl').and_return(@savon_client_test)
+        @connection.should_receive(:savon_client).with('https://www.cartaoprotegido.com.br/Services/TestEnvironment/CartaoProtegido.asmx?wsdl').and_return(@savon_client_test)
       end
 
       after :each do
-        Savon::Client.unstub(:new)
       end
 
       it "should have RequestId" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['RequestId'].should eq '123'
+        @savon_client_test.options.message['justClickShopRequestWS']['RequestId'].should eq '123'
       end
 
       it "should have MerchantKey" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['MerchantKey'].should eq 'um id qualquer'
+        @savon_client_test.options.message['justClickShopRequestWS']['MerchantKey'].should eq 'um id qualquer'
       end
 
       it "should have CustomerName" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['CustomerName'].should eq 'Joao Silva'
+        @savon_client_test.options.message['justClickShopRequestWS']['CustomerName'].should eq 'Joao Silva'
       end
 
       it "should have OrderId" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['OrderId'].should eq '999'
+        @savon_client_test.options.message['justClickShopRequestWS']['OrderId'].should eq '999'
       end
 
       it "should have Amount" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['Amount'].should eq "1050"
+        @savon_client_test.options.message['justClickShopRequestWS']['Amount'].should eq "1050"
       end
 
       it "should have PaymentMethod" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['PaymentMethod'].should eq 20
+        @savon_client_test.options.message['justClickShopRequestWS']['PaymentMethod'].should eq 20
       end
 
       it "should have PaymentType" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['PaymentType'].should eq 'test'
+        @savon_client_test.options.message['justClickShopRequestWS']['PaymentType'].should eq 'test'
       end
 
       it "should have NumberInstallments" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['NumberInstallments'].should eq 3
+        @savon_client_test.options.message['justClickShopRequestWS']['NumberInstallments'].should eq 3
       end
 
       it "should have JustClickKey" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['JustClickKey'].should eq 'key'
+        @savon_client_test.options.message['justClickShopRequestWS']['JustClickKey'].should eq 'key'
       end
 
       it "should have SecurityCode" do
         described_class.just_click_shop(params)
-        @savon_client_test.soap.body['justClickShopRequestWS']['SecurityCode'].should eq '123'
+        @savon_client_test.options.message['justClickShopRequestWS']['SecurityCode'].should eq '123'
       end
     end
 

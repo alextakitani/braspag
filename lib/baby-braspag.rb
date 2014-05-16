@@ -42,4 +42,13 @@ module Braspag
   def self.proxy_address
     @proxy_address
   end
+
+  def self.savon_global_options=(options_hash)
+    @savon_global_options ||= {}
+    @savon_global_options.merge!(options_hash)
+  end
+
+  def self.savon_global_options
+    @savon_global_options || {}
+  end
 end
