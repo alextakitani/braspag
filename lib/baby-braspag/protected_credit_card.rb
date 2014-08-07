@@ -97,7 +97,7 @@ module Braspag
       end
 
       data_for_logging = data['justClickShopRequestWS'].dup
-      data_for_logging['SecurityCode'] = data_for_logging['SecurityCode'].gsub('.', '*')
+      data_for_logging['SecurityCode'] = data_for_logging['SecurityCode'].gsub(/./, '*')
 
       Braspag::logger.info("[Braspag]: #just_click_shop, data: #{data_for_logging}") if Braspag::logger
 
