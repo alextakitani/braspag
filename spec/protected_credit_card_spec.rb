@@ -28,10 +28,11 @@ describe Braspag::ProtectedCreditCard do
     end
 
     let(:save_protected_card_url) { "http://braspag.com/bla" }
-
     let(:savon_double) { double('Savon') }
+    let(:logger) { mock(:info => nil) }
 
     before do
+      Braspag.logger = logger
       @connection.should_receive(:merchant_id)
     end
 
