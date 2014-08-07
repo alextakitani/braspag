@@ -284,6 +284,20 @@ describe Braspag::ProtectedCreditCard do
         described_class.just_click_shop(params)
         @savon_client_test.options.message['justClickShopRequestWS']['SecurityCode'].should eq '123'
       end
+
+      it "should log the request data and the response body" do
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #just_click_shop, data:})
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #just_click_shop returns:})
+
+        described_class.just_click_shop(params)
+      end
+
+      it "should mask the given security code" do
+        Braspag.logger.should_receive(:info).with(%r{"SecurityCode"=>"\*\*\*"})
+        Braspag.logger.should_receive(:info)
+
+        described_class.just_click_shop(params)
+      end
     end
 
     it ".save_protected_card_url .get_protected_card_url" do

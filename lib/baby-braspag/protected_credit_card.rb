@@ -99,7 +99,7 @@ module Braspag
       data_for_logging = data['justClickShopRequestWS'].dup
       data_for_logging['SecurityCode'] = data_for_logging['SecurityCode'].gsub(/./, '*')
 
-      Braspag::logger.info("[Braspag]: #just_click_shop, data: #{data_for_logging}") if Braspag::logger
+      Braspag::logger.info("[Braspag] #just_click_shop, data: #{data_for_logging}") if Braspag::logger
 
       client = savon_client(self.just_click_shop_url)
       response = client.call(:just_click_shop, :message => data)
