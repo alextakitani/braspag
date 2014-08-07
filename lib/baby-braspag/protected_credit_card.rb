@@ -43,12 +43,12 @@ module Braspag
       data_for_logging = data['saveCreditCardRequestWS'].dup
       data_for_logging['CardNumber'] = "************%s" % data_for_logging['CardNumber'][-4..-1]
 
-      Braspag::logger.info("[Braspag]: #save_credit_card, data: #{data_for_logging}") if Braspag::logger
+      Braspag.logger.info("[Braspag] #save_credit_card, data: #{data_for_logging}") if Braspag.logger
 
       client = savon_client(self.save_protected_card_url)
       response = client.call(:save_credit_card, :message => data)
 
-      Braspag::logger.info("[Braspag] #save_credit_card returns: #{response}") if Braspag::logger
+      Braspag.logger.info("[Braspag] #save_credit_card returns: #{response}") if Braspag.logger
 
       response.to_hash[:save_credit_card_response][:save_credit_card_result]
     end

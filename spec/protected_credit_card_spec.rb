@@ -58,11 +58,10 @@ describe Braspag::ProtectedCreditCard do
                            .and_return(true)
         @connection.should_receive(:savon_client).and_return(savon_double)
         savon_double.should_receive(:call).and_return(response)
-
-        @response = Braspag::ProtectedCreditCard.save(params)
       end
 
       it "should return a Hash" do
+        @response = Braspag::ProtectedCreditCard.save(params)
         @response.should be_kind_of Hash
         @response.should == {
           :just_click_key => "SAVE-PROTECTED-CARD-TOKEN",
@@ -70,6 +69,19 @@ describe Braspag::ProtectedCreditCard do
         }
       end
 
+      it "should log the request data and the response body" do
+        Braspag::logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card, data:})
+        Braspag::logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card returns:})
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
+
+      it "should mask the given card number" do
+        Braspag::logger.should_receive(:info).with(%r{"CardNumber"=>"\*\*\*\*\*\*\*\*\*\*\*\*9999"})
+        Braspag::logger.should_receive(:info)
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
     end
 
     context "with invalid params" do
