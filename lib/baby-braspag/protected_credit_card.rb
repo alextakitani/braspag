@@ -96,11 +96,17 @@ module Braspag
         end
       end
 
+      data_for_logging = data['justClickShopRequestWS'].dup
+      data_for_logging['SecurityCode'] = data_for_logging['SecurityCode'].gsub('.', '*')
+
+      Braspag::logger.info("[Braspag]: #just_click_shop, data: #{data_for_logging}") if Braspag::logger
+
       client = savon_client(self.just_click_shop_url)
       response = client.call(:just_click_shop, :message => data)
 
-      response.to_hash[:just_click_shop_response][:just_click_shop_result]
+      Braspag::logger.info("[Braspag] #just_click_shop returns: #{response}") if Braspag::logger
 
+      response.to_hash[:just_click_shop_response][:just_click_shop_result]
     end
 
     def self.check_protected_card_params(params)

@@ -32,7 +32,7 @@ describe Braspag::ProtectedCreditCard do
     let(:logger) { mock(:info => nil) }
 
     before do
-      Braspag.logger = logger
+      Braspag.stub(:logger => logger)
       @connection.should_receive(:merchant_id)
     end
 
@@ -195,6 +195,8 @@ describe Braspag::ProtectedCreditCard do
         :security_code => "123"
       } }
 
+      let(:logger) { mock(:info => nil) }
+
       class SavonClientTest
         attr_accessor :response
         attr_reader :method
@@ -211,7 +213,8 @@ describe Braspag::ProtectedCreditCard do
         end
       end
 
-      before :each do
+      before do
+        Braspag.stub(:logger => logger)
         @savon_client_test = SavonClientTest.new
         @savon_client_test.response = {:just_click_shop_response => {}}
         @connection.should_receive(:savon_client).with('https://www.cartaoprotegido.com.br/Services/TestEnvironment/CartaoProtegido.asmx?wsdl').and_return(@savon_client_test)
