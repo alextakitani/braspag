@@ -87,11 +87,43 @@ describe Braspag::ProtectedCreditCard do
         }
       end
 
-      it "should log the request data and the response body" do
+      it "should log that the save call was performed" do
         Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card, data:})
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
+
+      [
+        %r{"RequestId"=>"{D1BBDA27-65B9-4E68-9700-7A834A80BE88}"},
+        %r{"MerchantKey"=>"um id qualquer"},
+        %r{"CustomerName"=>"WWWWWWWWWWWWWWWWWWWWW"},
+        %r{"CardHolder"=>"Joao Maria Souza"},
+        %r{"CardExpiration"=>"10/12"}
+      ].each do |request_param|
+        it "should log the request data with the #{request_param} parameter" do
+          Braspag.logger.should_receive(:info).with(request_param)
+
+          Braspag::ProtectedCreditCard.save(params)
+        end
+      end
+
+      it "should log the response received from to the save call" do
+        Braspag.logger.should_receive(:info)
         Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card returns:})
 
         Braspag::ProtectedCreditCard.save(params)
+      end
+
+      [
+        %r{<CorrelationId>{D1BBDA27-65B9-4E68-9700-7A834A80BE88}</CorrelationId>},
+        %r{<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}</JustClickKey>},
+        %r{<Success>true</Success>}
+      ].each do |response_field|
+        it "should log the response with the #{response_field} field" do
+          Braspag.logger.should_receive(:info).with(response_field)
+
+          Braspag::ProtectedCreditCard.save(params)
+        end
       end
 
       it "should redact the given card number" do
