@@ -83,20 +83,20 @@ describe Braspag::ProtectedCreditCard do
       end
 
       it "should log the request data and the response body" do
-        Braspag::logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card, data:})
-        Braspag::logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card returns:})
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card, data:})
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card returns:})
 
         Braspag::ProtectedCreditCard.save(params)
       end
 
       it "should redact the given card number" do
-        Braspag::logger.should_receive(:info).with(%r{"CardNumber"=>"\*\*\*\*\*\*\*\*\*\*\*\*9999"})
+        Braspag.logger.should_receive(:info).with(%r{"CardNumber"=>"\*\*\*\*\*\*\*\*\*\*\*\*9999"})
 
         Braspag::ProtectedCreditCard.save(params)
       end
 
       it "should redact the just click key value" do
-        Braspag::logger.should_receive(:info).with(%r{<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}<\/JustClickKey>})
+        Braspag.logger.should_receive(:info).with(%r{<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}<\/JustClickKey>})
 
         Braspag::ProtectedCreditCard.save(params)
       end
