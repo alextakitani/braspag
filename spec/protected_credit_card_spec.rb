@@ -222,7 +222,7 @@ describe Braspag::ProtectedCreditCard do
         :payment_method => :redecard,
         :number_installments => 3,
         :payment_type => "test",
-        :just_click_key => "key",
+        :just_click_key => "{070071E9-1F73-4C85-B1E4-D8040A627DED}",
         :security_code => "123"
       } }
 
@@ -296,7 +296,7 @@ describe Braspag::ProtectedCreditCard do
 
       it "should have JustClickKey" do
         described_class.just_click_shop(params)
-        @savon_client_test.options.message['justClickShopRequestWS']['JustClickKey'].should eq 'key'
+        @savon_client_test.options.message['justClickShopRequestWS']['JustClickKey'].should eq '{070071E9-1F73-4C85-B1E4-D8040A627DED}'
       end
 
       it "should have SecurityCode" do
@@ -314,6 +314,12 @@ describe Braspag::ProtectedCreditCard do
       it "should mask the given security code" do
         Braspag.logger.should_receive(:info).with(%r{"SecurityCode"=>"\*\*\*"})
         Braspag.logger.should_receive(:info)
+
+        described_class.just_click_shop(params)
+      end
+
+      it "should mask the given security code" do
+        Braspag.logger.should_receive(:info).with(%r{"JustClickKey"=>"{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}"})
 
         described_class.just_click_shop(params)
       end
