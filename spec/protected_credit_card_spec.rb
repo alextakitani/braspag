@@ -19,7 +19,7 @@ describe Braspag::ProtectedCreditCard do
         :card_number => "9" * 10,
         :expiration => "10/12",
         :order_id => "um order id",
-        :request_id => "00000000-0000-0000-0000-000000000044"
+        :request_id => "{D1BBDA27-65B9-4E68-9700-7A834A80BE88}"
       }
     end
 
@@ -37,11 +37,12 @@ describe Braspag::ProtectedCreditCard do
     end
 
     context "with valid params" do
-      let(:valid_hash) do
+      let(:valid_response_hash) do
         {
           :save_credit_card_response => {
             :save_credit_card_result => {
-              :just_click_key => 'SAVE-PROTECTED-CARD-TOKEN',
+              :correlation_id => '{D1BBDA27-65B9-4E68-9700-7A834A80BE88}',
+              :just_click_key => '{070071E9-1F73-4C85-B1E4-D8040A627DED}',
               :success => true
             }
           }
@@ -55,14 +56,16 @@ describe Braspag::ProtectedCreditCard do
             <soap:Body>
               <SaveCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
                 <SaveCreditCardResult>
+                  <CorrelationId>{D1BBDA27-65B9-4E68-9700-7A834A80BE88}</CorrelationId>
                   <JustClickKey>{070071E9-1F73-4C85-B1E4-D8040A627DED}</JustClickKey>
+                  <Success>true</Success>
                 </SaveCreditCardResult>
               </SaveCreditCardResponse>
             </soap:Body>
           </soap:Envelope>
         XML
 
-        double('Response', :to_s => xml_response, :to_hash => valid_hash)
+        double('Response', :to_s => xml_response, :to_hash => valid_response_hash)
       end
 
       before do
@@ -75,9 +78,11 @@ describe Braspag::ProtectedCreditCard do
 
       it "should return a Hash" do
         @response = Braspag::ProtectedCreditCard.save(params)
+
         @response.should be_kind_of Hash
         @response.should == {
-          :just_click_key => "SAVE-PROTECTED-CARD-TOKEN",
+          :correlation_id => '{D1BBDA27-65B9-4E68-9700-7A834A80BE88}',
+          :just_click_key => '{070071E9-1F73-4C85-B1E4-D8040A627DED}',
           :success => true
         }
       end
