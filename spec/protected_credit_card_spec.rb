@@ -91,7 +91,6 @@ describe Braspag::ProtectedCreditCard do
 
       it "should redact the given card number" do
         Braspag::logger.should_receive(:info).with(%r{"CardNumber"=>"\*\*\*\*\*\*\*\*\*\*\*\*9999"})
-        Braspag::logger.should_receive(:info)
 
         Braspag::ProtectedCreditCard.save(params)
       end
@@ -313,7 +312,6 @@ describe Braspag::ProtectedCreditCard do
 
       it "should redact the given security code" do
         Braspag.logger.should_receive(:info).with(%r{"SecurityCode"=>"\*\*\*"})
-        Braspag.logger.should_receive(:info)
 
         described_class.just_click_shop(params)
       end
