@@ -49,7 +49,20 @@ describe Braspag::ProtectedCreditCard do
       end
 
       let(:response) do
-        double('Response', :to_hash => valid_hash)
+        xml_response = <<-XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Body>
+              <SaveCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+                <SaveCreditCardResult>
+                  <JustClickKey>{070071E9-1F73-4C85-B1E4-D8040A627DED}</JustClickKey>
+                </SaveCreditCardResult>
+              </SaveCreditCardResponse>
+            </soap:Body>
+          </soap:Envelope>
+        XML
+
+        double('Response', :to_s => xml_response, :to_hash => valid_hash)
       end
 
       before do
@@ -79,6 +92,12 @@ describe Braspag::ProtectedCreditCard do
       it "should mask the given card number" do
         Braspag::logger.should_receive(:info).with(%r{"CardNumber"=>"\*\*\*\*\*\*\*\*\*\*\*\*9999"})
         Braspag::logger.should_receive(:info)
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
+
+      it "should redact the just click key value" do
+        Braspag::logger.should_receive(:info).with(%r{<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}<\/JustClickKey>})
 
         Braspag::ProtectedCreditCard.save(params)
       end

@@ -48,7 +48,10 @@ module Braspag
       client = savon_client(self.save_protected_card_url)
       response = client.call(:save_credit_card, :message => data)
 
-      Braspag.logger.info("[Braspag] #save_credit_card returns: #{response}") if Braspag.logger
+      # We do not want to let any sensitive data exposed on log files.
+      redacted_response = redact_just_click_key(response)
+
+      Braspag.logger.info("[Braspag] #save_credit_card returns: #{redacted_response}") if Braspag.logger
 
       response.to_hash[:save_credit_card_response][:save_credit_card_result]
     end
@@ -160,6 +163,28 @@ module Braspag
 
     def self.savon_client(url)
       Braspag::Connection.instance.savon_client url
+    end
+
+    # Internal: Redact the JustClickKey value from a XML response.
+    #
+    # response - the XML response string to be parsed.
+    #
+    # Example
+    #
+    #   redact_just_click_key('<JustClickKey>{070071E9-1F73-4C85-B1E4-D8040A627DED}</JustClickKey>')
+    #   # => '<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}</JustClickKey>'
+    #
+    # Returns a String.
+    def self.redact_just_click_key(response)
+      response.to_s.sub(/(<JustClickKey>)(.*)(<\/JustClickKey>)/) do
+        open_tag = $1
+        just_click_key = $2
+        close_tag = $3
+
+        just_click_key = just_click_key.to_s.gsub(/\h/, 'X')
+
+        open_tag + just_click_key + close_tag
+      end
     end
   end
 end
