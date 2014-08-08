@@ -176,15 +176,7 @@ module Braspag
     #
     # Returns a String.
     def self.redact_just_click_key(response)
-      response.to_s.sub(/(<JustClickKey>)(.*)(<\/JustClickKey>)/) do
-        open_tag = $1
-        just_click_key = $2
-        close_tag = $3
-
-        just_click_key = just_click_key.to_s.gsub(/\h/, 'X')
-
-        open_tag + just_click_key + close_tag
-      end
+      response.to_s.gsub(/(?<=<JustClickKey>)(.*?)(?=<\/JustClickKey>)/) { |key| key.gsub(/\h/, 'X') }
     end
   end
 end
