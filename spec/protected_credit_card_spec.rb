@@ -89,7 +89,7 @@ describe Braspag::ProtectedCreditCard do
         Braspag::ProtectedCreditCard.save(params)
       end
 
-      it "should mask the given card number" do
+      it "should redact the given card number" do
         Braspag::logger.should_receive(:info).with(%r{"CardNumber"=>"\*\*\*\*\*\*\*\*\*\*\*\*9999"})
         Braspag::logger.should_receive(:info)
 
@@ -311,14 +311,14 @@ describe Braspag::ProtectedCreditCard do
         described_class.just_click_shop(params)
       end
 
-      it "should mask the given security code" do
+      it "should redact the given security code" do
         Braspag.logger.should_receive(:info).with(%r{"SecurityCode"=>"\*\*\*"})
         Braspag.logger.should_receive(:info)
 
         described_class.just_click_shop(params)
       end
 
-      it "should mask the given security code" do
+      it "should redact the given security code" do
         Braspag.logger.should_receive(:info).with(%r{"JustClickKey"=>"{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}"})
 
         described_class.just_click_shop(params)
