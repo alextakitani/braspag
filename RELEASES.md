@@ -1,5 +1,9 @@
 # RELEASES
 
+## 0.2.1 - 11/08/2014
+
+Log das operações `SaveCreditCard` e `JustClickShop` do serviço `CartaoProtegido`.
+
 ## For next release
 
 d2b9a7a Voltando a usar o HTTPI
