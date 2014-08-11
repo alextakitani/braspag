@@ -40,12 +40,20 @@ module Braspag
         data['saveCreditCardRequestWS'][v] = params[k] || ""
       end
 
+      data_for_logging = data['saveCreditCardRequestWS'].dup
+      data_for_logging['CardNumber'] = "************%s" % data_for_logging['CardNumber'][-4..-1]
 
-     client = savon_client(self.save_protected_card_url)
-     response = client.call(:save_credit_card, :message => data)
+      Braspag.logger.info("[Braspag] #save_credit_card, data: #{data_for_logging}") if Braspag.logger
+
+      client = savon_client(self.save_protected_card_url)
+      response = client.call(:save_credit_card, :message => data)
+
+      # We do not want to let any sensitive data exposed on log files.
+      redacted_response = redact_just_click_key(response)
+
+      Braspag.logger.info("[Braspag] #save_credit_card returns: #{redacted_response}") if Braspag.logger
 
       response.to_hash[:save_credit_card_response][:save_credit_card_result]
-
     end
 
     # request the credit card info in Braspag PCI Compliant
@@ -91,11 +99,18 @@ module Braspag
         end
       end
 
+      data_for_logging = data['justClickShopRequestWS'].dup
+      data_for_logging['SecurityCode'] = data_for_logging['SecurityCode'].gsub(/./, '*')
+      data_for_logging['JustClickKey'] = data_for_logging['JustClickKey'].gsub(/\h/, 'X')
+
+      Braspag.logger.info("[Braspag] #just_click_shop, data: #{data_for_logging}") if Braspag.logger
+
       client = savon_client(self.just_click_shop_url)
       response = client.call(:just_click_shop, :message => data)
 
-      response.to_hash[:just_click_shop_response][:just_click_shop_result]
+      Braspag.logger.info("[Braspag] #just_click_shop returns: #{response}") if Braspag.logger
 
+      response.to_hash[:just_click_shop_response][:just_click_shop_result]
     end
 
     def self.check_protected_card_params(params)
@@ -149,6 +164,20 @@ module Braspag
 
     def self.savon_client(url)
       Braspag::Connection.instance.savon_client url
+    end
+
+    # Internal: Redact the JustClickKey value from a XML response.
+    #
+    # response - the XML response string to be parsed.
+    #
+    # Example
+    #
+    #   redact_just_click_key('<JustClickKey>{070071E9-1F73-4C85-B1E4-D8040A627DED}</JustClickKey>')
+    #   # => '<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}</JustClickKey>'
+    #
+    # Returns a String.
+    def self.redact_just_click_key(response)
+      response.to_s.gsub(/(?<=<JustClickKey>)(.*?)(?=<\/JustClickKey>)/) { |key| key.gsub(/\h/, 'X') }
     end
   end
 end

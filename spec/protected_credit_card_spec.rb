@@ -19,7 +19,7 @@ describe Braspag::ProtectedCreditCard do
         :card_number => "9" * 10,
         :expiration => "10/12",
         :order_id => "um order id",
-        :request_id => "00000000-0000-0000-0000-000000000044"
+        :request_id => "{D1BBDA27-65B9-4E68-9700-7A834A80BE88}"
       }
     end
 
@@ -28,19 +28,21 @@ describe Braspag::ProtectedCreditCard do
     end
 
     let(:save_protected_card_url) { "http://braspag.com/bla" }
-
     let(:savon_double) { double('Savon') }
+    let(:logger) { mock(:info => nil) }
 
     before do
+      Braspag.stub(:logger => logger)
       @connection.should_receive(:merchant_id)
     end
 
     context "with valid params" do
-      let(:valid_hash) do
+      let(:valid_response_hash) do
         {
           :save_credit_card_response => {
             :save_credit_card_result => {
-              :just_click_key => 'SAVE-PROTECTED-CARD-TOKEN',
+              :correlation_id => '{D1BBDA27-65B9-4E68-9700-7A834A80BE88}',
+              :just_click_key => '{070071E9-1F73-4C85-B1E4-D8040A627DED}',
               :success => true
             }
           }
@@ -48,7 +50,22 @@ describe Braspag::ProtectedCreditCard do
       end
 
       let(:response) do
-        double('Response', :to_hash => valid_hash)
+        xml_response = <<-XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Body>
+              <SaveCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+                <SaveCreditCardResult>
+                  <CorrelationId>{D1BBDA27-65B9-4E68-9700-7A834A80BE88}</CorrelationId>
+                  <JustClickKey>{070071E9-1F73-4C85-B1E4-D8040A627DED}</JustClickKey>
+                  <Success>true</Success>
+                </SaveCreditCardResult>
+              </SaveCreditCardResponse>
+            </soap:Body>
+          </soap:Envelope>
+        XML
+
+        double('Response', :to_s => xml_response, :to_hash => valid_response_hash)
       end
 
       before do
@@ -57,18 +74,69 @@ describe Braspag::ProtectedCreditCard do
                            .and_return(true)
         @connection.should_receive(:savon_client).and_return(savon_double)
         savon_double.should_receive(:call).and_return(response)
-
-        @response = Braspag::ProtectedCreditCard.save(params)
       end
 
       it "should return a Hash" do
+        @response = Braspag::ProtectedCreditCard.save(params)
+
         @response.should be_kind_of Hash
         @response.should == {
-          :just_click_key => "SAVE-PROTECTED-CARD-TOKEN",
+          :correlation_id => '{D1BBDA27-65B9-4E68-9700-7A834A80BE88}',
+          :just_click_key => '{070071E9-1F73-4C85-B1E4-D8040A627DED}',
           :success => true
         }
       end
 
+      it "should log that the save call was performed" do
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card, data:})
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
+
+      [
+        %r{"RequestId"=>"{D1BBDA27-65B9-4E68-9700-7A834A80BE88}"},
+        %r{"MerchantKey"=>"um id qualquer"},
+        %r{"CustomerName"=>"WWWWWWWWWWWWWWWWWWWWW"},
+        %r{"CardHolder"=>"Joao Maria Souza"},
+        %r{"CardExpiration"=>"10/12"}
+      ].each do |request_param|
+        it "should log the request data with the #{request_param} parameter" do
+          Braspag.logger.should_receive(:info).with(request_param)
+
+          Braspag::ProtectedCreditCard.save(params)
+        end
+      end
+
+      it "should log the response received from to the save call" do
+        Braspag.logger.should_receive(:info)
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #save_credit_card returns:})
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
+
+      [
+        %r{<CorrelationId>{D1BBDA27-65B9-4E68-9700-7A834A80BE88}</CorrelationId>},
+        %r{<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}</JustClickKey>},
+        %r{<Success>true</Success>}
+      ].each do |response_field|
+        it "should log the response with the #{response_field} field" do
+          Braspag.logger.should_receive(:info).with(response_field)
+
+          Braspag::ProtectedCreditCard.save(params)
+        end
+      end
+
+      it "should redact the given card number" do
+        Braspag.logger.should_receive(:info).with(%r{"CardNumber"=>"\*\*\*\*\*\*\*\*\*\*\*\*9999"})
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
+
+      it "should redact the just click key value" do
+        Braspag.logger.should_receive(:info).with(%r{<JustClickKey>{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}<\/JustClickKey>})
+
+        Braspag::ProtectedCreditCard.save(params)
+      end
     end
 
     context "with invalid params" do
@@ -190,9 +258,11 @@ describe Braspag::ProtectedCreditCard do
         :payment_method => :redecard,
         :number_installments => 3,
         :payment_type => "test",
-        :just_click_key => "key",
+        :just_click_key => "{070071E9-1F73-4C85-B1E4-D8040A627DED}",
         :security_code => "123"
       } }
+
+      let(:logger) { mock(:info => nil) }
 
       class SavonClientTest
         attr_accessor :response
@@ -210,7 +280,8 @@ describe Braspag::ProtectedCreditCard do
         end
       end
 
-      before :each do
+      before do
+        Braspag.stub(:logger => logger)
         @savon_client_test = SavonClientTest.new
         @savon_client_test.response = {:just_click_shop_response => {}}
         @connection.should_receive(:savon_client).with('https://www.cartaoprotegido.com.br/Services/TestEnvironment/CartaoProtegido.asmx?wsdl').and_return(@savon_client_test)
@@ -261,12 +332,31 @@ describe Braspag::ProtectedCreditCard do
 
       it "should have JustClickKey" do
         described_class.just_click_shop(params)
-        @savon_client_test.options.message['justClickShopRequestWS']['JustClickKey'].should eq 'key'
+        @savon_client_test.options.message['justClickShopRequestWS']['JustClickKey'].should eq '{070071E9-1F73-4C85-B1E4-D8040A627DED}'
       end
 
       it "should have SecurityCode" do
         described_class.just_click_shop(params)
         @savon_client_test.options.message['justClickShopRequestWS']['SecurityCode'].should eq '123'
+      end
+
+      it "should log the request data and the response body" do
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #just_click_shop, data:})
+        Braspag.logger.should_receive(:info).with(%r{\[Braspag\] #just_click_shop returns:})
+
+        described_class.just_click_shop(params)
+      end
+
+      it "should redact the given security code" do
+        Braspag.logger.should_receive(:info).with(%r{"SecurityCode"=>"\*\*\*"})
+
+        described_class.just_click_shop(params)
+      end
+
+      it "should redact the given security code" do
+        Braspag.logger.should_receive(:info).with(%r{"JustClickKey"=>"{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}"})
+
+        described_class.just_click_shop(params)
       end
     end
 
