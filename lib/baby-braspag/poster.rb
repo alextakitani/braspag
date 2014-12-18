@@ -6,7 +6,7 @@ module Braspag
 
     def do_post(method, data)
       @request.body = data
-      @request.proxy = Braspag.proxy_address if Braspag.proxy_address
+      configure_request
 
       with_logger(method) do
         ::HTTPI.post @request
@@ -14,6 +14,16 @@ module Braspag
     end
 
     private
+
+    def configure_request
+      proxy_address = Braspag.proxy_address
+      open_timeout = Braspag.http_global_options[:open_timeout]
+      read_timeout = Braspag.http_global_options[:read_timeout]
+
+      @request.proxy = proxy_address if proxy_address
+      @request.open_timeout = open_timeout if open_timeout
+      @request.read_timeout = read_timeout if read_timeout
+    end
 
     def with_logger(method)
       if Braspag::logger
