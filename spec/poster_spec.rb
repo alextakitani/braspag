@@ -50,5 +50,34 @@ describe Braspag::Poster do
         subject.do_post(:foo, {})
       end
     end
+
+    describe "timeouts" do
+      context "when no timeout is set" do
+        before do
+          Braspag.http_global_options = {}
+        end
+
+        it "sets no timeout in HTTP client" do
+          request.should_not_receive(:open_timeout=)
+          request.should_not_receive(:read_timeout=)
+          subject.do_post(:foo, {})
+        end
+      end
+
+      context "when timeouts are set" do
+        before do
+          Braspag.http_global_options = {
+            :open_timeout => 10,
+            :read_timeout => 20
+          }
+        end
+
+        it "sets the timeouts in the HTTP client" do
+          request.should_receive(:open_timeout=).with(10)
+          request.should_receive(:read_timeout=).with(20)
+          subject.do_post(:foo, {})
+        end
+      end
+    end
   end
 end
