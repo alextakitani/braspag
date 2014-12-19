@@ -44,8 +44,7 @@ module Braspag
   end
 
   def self.http_global_options=(options_hash)
-    @http_global_options ||= {}
-    @http_global_options.merge!(options_hash)
+    @http_global_options = options_hash
   end
 
   def self.http_global_options
@@ -53,8 +52,7 @@ module Braspag
   end
 
   def self.savon_global_options=(options_hash)
-    @savon_global_options ||= {}
-    @savon_global_options.merge!(options_hash)
+    @savon_global_options = options_hash
   end
 
   def self.savon_global_options
