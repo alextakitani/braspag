@@ -27,9 +27,10 @@ describe Braspag::CreditCard do
 
   describe ".authorize" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/Authorize" }
+    let(:order_id) { 'order-id' }
 
     let(:params) { {
-      :order_id => "um order id",
+      :order_id => order_id,
       :customer_name => "W" * 21,
       :amount => "100.00",
       :payment_method => :redecard,
@@ -60,7 +61,7 @@ describe Braspag::CreditCard do
 
     it "request the order authorization" do
       Braspag::CreditCard.authorize(params)
-      request.body.should == {"merchantId"=>"order-id", "order"=>"", "orderId"=>"um order id", "customerName"=>"WWWWWWWWWWWWWWWWWWWWW", "amount"=>"100,00", "paymentMethod"=>997, "holder"=>"Joao Maria Souza", "cardNumber"=>"9999999999", "expiration"=>"10/12", "securityCode"=>"123", "numberPayments"=>1, "typePayment"=>0}
+      request.body.should == {"merchantId"=>"order-id", "order"=>"", "orderId"=>"order-id", "customerName"=>"WWWWWWWWWWWWWWWWWWWWW", "amount"=>"100,00", "paymentMethod"=>997, "holder"=>"Joao Maria Souza", "cardNumber"=>"9999999999", "expiration"=>"10/12", "securityCode"=>"123", "numberPayments"=>1, "typePayment"=>0}
     end
 
     it "returns the authorization result" do
@@ -73,6 +74,88 @@ describe Braspag::CreditCard do
         :status => "2",
         :transaction_id => "0"
       }
+    end
+
+    describe "validation" do
+      [:order_id, :amount, :payment_method, :customer_name, :holder, :card_number, :expiration,
+        :security_code, :number_payments, :type].each do |param|
+        it "raises an error when #{param} parameter is missing" do
+          params[param] = nil
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::IncompleteParams
+        end
+      end
+
+      context "when order id is invalid" do
+        before { params[:order_id] = '' }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidOrderId
+        end
+      end
+
+      context "when payment method is invalid" do
+        before { params[:payment_method] = 'invalid' }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidPaymentMethod
+        end
+      end
+
+      context "when customer name is too long" do
+        before { params[:customer_name] = 'n' * 256 }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidCustomerName
+        end
+      end
+
+      context "when card holder name is too long" do
+        before { params[:holder] = 'h' * 101 }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidHolder
+        end
+      end
+
+      context "when expiration is in invalid format" do
+        before { params[:expiration] = '2011/19/19' }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidExpirationDate
+        end
+      end
+
+      context "when security code is too long" do
+        before { params[:security_code] = '12345' }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidSecurityCode
+        end
+      end
+
+      context "when security code is too short" do
+        before { params[:security_code] = '' }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidSecurityCode
+        end
+      end
+
+      context "when the number of payments is too high" do
+        before { params[:number_payments] = 100 }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidNumberPayments
+        end
+      end
+
+      context "when the number of payments is too low" do
+        before { params[:number_payments] = 0 }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidNumberPayments
+        end
+      end
     end
   end
 
@@ -258,103 +341,6 @@ describe Braspag::CreditCard do
           :transaction_number => "101001225645"
         }
       end
-    end
-  end
-
-  describe ".check_params" do
-    let(:params) { {
-      :order_id => 12345,
-      :customer_name => "AAAAAAAA",
-      :payment_method => :amex_2p,
-      :amount => "100.00",
-      :holder => "Joao Maria Souza",
-      :expiration => "10/12",
-      :card_number => "9" * 10,
-      :security_code => "123",
-      :number_payments => 1,
-      :type => 0
-    }}
-
-    [:order_id, :amount, :payment_method, :customer_name, :holder, :card_number, :expiration,
-      :security_code, :number_payments, :type].each do |param|
-      it "should raise an error when #{param} is not present" do
-        expect {
-          params[param] = nil
-          Braspag::CreditCard.check_params(params)
-        }.to raise_error Braspag::IncompleteParams
-      end
-    end
-
-    it "should raise an error when order_id is not valid" do
-      Braspag::CreditCard.should_receive(:valid_order_id?)
-      .with(params[:order_id])
-      .and_return(false)
-
-      expect {
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidOrderId
-    end
-
-    it "should raise an error when payment_method is not invalid" do
-      expect {
-        params[:payment_method] = "non ecziste"
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidPaymentMethod
-    end
-
-    it "should raise an error when customer_name is greater than 255 chars" do
-      expect {
-        params[:customer_name] = "b" * 256
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidCustomerName
-    end
-
-    it "should raise an error when holder is greater than 100 chars" do
-      expect {
-        params[:holder] = "r" * 101
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidHolder
-    end
-
-    it "should raise an error when expiration is not in a valid format" do
-      expect {
-        params[:expiration] = "2011/19/19"
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidExpirationDate
-
-      expect {
-        params[:expiration] = "12/2012"
-        Braspag::CreditCard.check_params(params)
-      }.to_not raise_error Braspag::InvalidExpirationDate
-
-      expect {
-        params[:expiration] = "12/12"
-        Braspag::CreditCard.check_params(params)
-      }.to_not raise_error Braspag::InvalidExpirationDate
-    end
-
-    it "should raise an error when security code is greater than 4 chars" do
-      expect {
-        params[:security_code] = "12345"
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidSecurityCode
-
-      expect {
-        params[:security_code] = ""
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidSecurityCode
-    end
-
-    it "should raise an error when number_payments is greater than 99" do
-      expect {
-        params[:number_payments] = 100
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidNumberPayments
-
-      expect {
-        params[:number_payments] = 0
-        Braspag::CreditCard.check_params(params)
-      }.to raise_error Braspag::InvalidNumberPayments
     end
   end
 
