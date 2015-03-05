@@ -26,6 +26,8 @@ describe Braspag::CreditCard do
   end
 
   describe ".authorize" do
+    let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/Authorize" }
+
     let(:params) { {
       :order_id => "um order id",
       :customer_name => "W" * 21,
@@ -39,42 +41,38 @@ describe Braspag::CreditCard do
       :type => 0
     } }
 
-    let(:params_with_merchant_id) { params.merge(:merchant_id => merchant_id) }
-    let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/Authorize" }
 
-    context "with valid params" do
-      let(:response_xml) do
-        <<-EOXML
-        <?xml version="1.0" encoding="utf-8"?>
-        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                       xmlns="https://www.pagador.com.br/webservice/pagador">
-          <amount>5</amount>
-          <message>Transaction Successful</message>
-          <authorisationNumber>733610</authorisationNumber>
-          <returnCode>7</returnCode>
-          <status>2</status>
-          <transactionId>0</transactionId>
-        </PagadorReturn>
-        EOXML
-      end
+    let(:response_xml) do
+      <<-EOXML
+      <?xml version="1.0" encoding="utf-8"?>
+      <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                     xmlns="https://www.pagador.com.br/webservice/pagador">
+        <amount>5</amount>
+        <message>Transaction Successful</message>
+        <authorisationNumber>733610</authorisationNumber>
+        <returnCode>7</returnCode>
+        <status>2</status>
+        <transactionId>0</transactionId>
+      </PagadorReturn>
+      EOXML
+    end
 
-      it "should return a Hash" do
-        response = Braspag::CreditCard.authorize(params)
-        response.should == {
-          :amount => "5",
-          :message => "Transaction Successful",
-          :number => "733610",
-          :return_code => "7",
-          :status => "2",
-          :transaction_id => "0"
-        }
-      end
+    it "posts the required data for the transaction" do
+      Braspag::CreditCard.authorize(params)
+      request.body.should == {"merchantId"=>"um id qualquer", "order"=>"", "orderId"=>"um order id", "customerName"=>"WWWWWWWWWWWWWWWWWWWWW", "amount"=>"100,00", "paymentMethod"=>997, "holder"=>"Joao Maria Souza", "cardNumber"=>"9999999999", "expiration"=>"10/12", "securityCode"=>"123", "numberPayments"=>1, "typePayment"=>0}
+    end
 
-      it "should post transation info" do
-        Braspag::CreditCard.authorize(params)
-        request.body.should == {"merchantId"=>"um id qualquer", "order"=>"", "orderId"=>"um order id", "customerName"=>"WWWWWWWWWWWWWWWWWWWWW", "amount"=>"100,00", "paymentMethod"=>997, "holder"=>"Joao Maria Souza", "cardNumber"=>"9999999999", "expiration"=>"10/12", "securityCode"=>"123", "numberPayments"=>1, "typePayment"=>0}
-      end
+    it "returns a hash" do
+      response = Braspag::CreditCard.authorize(params)
+      response.should == {
+        :amount => "5",
+        :message => "Transaction Successful",
+        :number => "733610",
+        :return_code => "7",
+        :status => "2",
+        :transaction_id => "0"
+      }
     end
   end
 
