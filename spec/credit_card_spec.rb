@@ -250,37 +250,35 @@ describe Braspag::CreditCard do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/VoidTransaction" }
     let(:order_id) { 'order-id' }
 
-    context "valid order id" do
-      let(:response_xml) do
-        <<-EOXML
-          <?xml version="1.0" encoding="utf-8"?>
-          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                         xmlns="https://www.pagador.com.br/webservice/pagador">
-            <amount>2</amount>
-            <message>Approved</message>
-            <returnCode>0</returnCode>
-            <status>0</status>
-          </PagadorReturn>
-        EOXML
-      end
+    let(:response_xml) do
+      <<-EOXML
+        <?xml version="1.0" encoding="utf-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                       xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount>2</amount>
+          <message>Approved</message>
+          <returnCode>0</returnCode>
+          <status>0</status>
+        </PagadorReturn>
+      EOXML
+    end
 
-      it "requests the order cancellation" do
-        Braspag::CreditCard.void(order_id)
-        request.body.should == {"order"=>"order-id", "merchantId"=>"order-id"}
-      end
+    it "requests the order cancellation" do
+      Braspag::CreditCard.void(order_id)
+      request.body.should == {"order"=>"order-id", "merchantId"=>"order-id"}
+    end
 
-      it "returns the cancellation response" do
-        response = Braspag::CreditCard.void(order_id)
-        response.should == {
-          :amount => "2",
-          :number => nil,
-          :message => "Approved",
-          :return_code => "0",
-          :status => "0",
-          :transaction_id => nil
-        }
-      end
+    it "returns the cancellation response" do
+      response = Braspag::CreditCard.void(order_id)
+      response.should == {
+        :amount => "2",
+        :number => nil,
+        :message => "Approved",
+        :return_code => "0",
+        :status => "0",
+        :transaction_id => nil
+      }
     end
 
     context "when the order id is invalid" do
