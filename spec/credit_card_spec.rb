@@ -124,43 +124,42 @@ describe Braspag::CreditCard do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/CapturePartial" }
     let(:order_id) { "order-id" }
 
-    context "invalid order id" do
-      it "should raise an error" do
-        Braspag::CreditCard.should_receive(:valid_order_id?).with(order_id).and_return(false)
-        expect { Braspag::CreditCard.partial_capture(order_id, 10.0) }.to raise_error(Braspag::InvalidOrderId)
-      end
+    let(:response_xml) do
+      <<-EOXML
+        <?xml version="1.0" encoding="utf-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                       xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount>2</amount>
+          <message>Approved</message>
+          <returnCode>0</returnCode>
+          <status>0</status>
+        </PagadorReturn>
+      EOXML
     end
 
-    context "valid order id" do
-      let(:response_xml) do
-        <<-EOXML
-          <?xml version="1.0" encoding="utf-8"?>
-          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                         xmlns="https://www.pagador.com.br/webservice/pagador">
-            <amount>2</amount>
-            <message>Approved</message>
-            <returnCode>0</returnCode>
-            <status>0</status>
-          </PagadorReturn>
-        EOXML
-      end
+    it "requests the order partial capture" do
+      Braspag::CreditCard.partial_capture(order_id, 10.0)
+      request.body.should == {"orderId"=>"order-id", "captureAmount"=>"10,00", "merchantId"=>"order-id"}
+    end
 
-      it "should return a Hash" do
-        response = Braspag::CreditCard.partial_capture("order id qualquer", 10.0)
-        response.should == {
-          :amount => "2",
-          :number => nil,
-          :message => "Approved",
-          :return_code => "0",
-          :status => "0",
-          :transaction_id => nil
-        }
-      end
+    it "returns the partial capture response" do
+      response = Braspag::CreditCard.partial_capture(order_id, 10.0)
+      response.should == {
+        :amount => "2",
+        :number => nil,
+        :message => "Approved",
+        :return_code => "0",
+        :status => "0",
+        :transaction_id => nil
+      }
+    end
 
-      it "should post capture info" do
-        Braspag::CreditCard.partial_capture("order id qualquer", 10.0)
-        request.body.should == {"orderId"=>"order id qualquer", "captureAmount"=>"10,00", "merchantId"=>"order-id"}
+    context "when the order id is invalid" do
+      let(:order_id) { '' }
+
+      it "should raise an error" do
+        expect { Braspag::CreditCard.partial_capture(order_id, 10.0) }.to raise_error(Braspag::InvalidOrderId)
       end
     end
   end
