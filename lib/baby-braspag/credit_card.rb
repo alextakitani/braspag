@@ -27,7 +27,7 @@ module Braspag
       connection = Braspag::Connection.instance
       params[:merchant_id] = connection.merchant_id
 
-      self.check_params(params)
+      check_params(params)
 
       data = {}
       MAPPING.each do |k, v|
@@ -41,7 +41,7 @@ module Braspag
         end
       end
 
-      response = Braspag::Poster.new(self.authorize_url).do_post(:authorize, data)
+      response = Braspag::Poster.new(authorize_url).do_post(:authorize, data)
 
       Utils::convert_to_map(response.body, {
           :amount => nil,
@@ -64,7 +64,7 @@ module Braspag
         MAPPING[:merchant_id] => merchant_id
       }
 
-      response = Braspag::Poster.new(self.capture_url).do_post(:capture, data)
+      response = Braspag::Poster.new(capture_url).do_post(:capture, data)
 
       Utils::convert_to_map(response.body, {
           :amount => nil,
@@ -88,7 +88,7 @@ module Braspag
         "captureAmount" => Utils.convert_decimal_to_string(amount)
       }
 
-      response = Braspag::Poster.new(self.partial_capture_url).do_post(:partial_capture, data)
+      response = Braspag::Poster.new(partial_capture_url).do_post(:partial_capture, data)
 
       Utils::convert_to_map(response.body, {
           :amount => nil,
@@ -111,7 +111,7 @@ module Braspag
         MAPPING[:merchant_id] => merchant_id
       }
 
-      response = Braspag::Poster.new(self.cancellation_url).do_post(:void, data)
+      response = Braspag::Poster.new(cancellation_url).do_post(:void, data)
 
       Utils::convert_to_map(response.body, {
           :amount => nil,
@@ -129,7 +129,7 @@ module Braspag
       raise InvalidOrderId unless self.valid_order_id?(order_id)
 
       data = {:loja => connection.merchant_id, :numeroPedido => order_id.to_s}
-      response = Braspag::Poster.new(self.info_url).do_post(:info_credit_card, data)
+      response = Braspag::Poster.new(info_url).do_post(:info_credit_card, data)
 
       response = Utils::convert_to_map(response.body, {
           :checking_number => "NumeroComprovante",
@@ -141,31 +141,6 @@ module Braspag
 
       raise UnknownError if response[:checking_number].nil?
       response
-    end
-
-    def self.check_params(params)
-      super
-
-      [:customer_name, :holder, :card_number, :expiration, :security_code, :number_payments, :type].each do |param|
-        raise IncompleteParams if params[param].nil?
-      end
-
-      raise InvalidHolder if params[:holder].to_s.size < 1 || params[:holder].to_s.size > 100
-
-      matches = params[:expiration].to_s.match /^(\d{2})\/(\d{2,4})$/
-      raise InvalidExpirationDate unless matches
-      begin
-        year = matches[2].to_i
-        year = "20#{year}" if year.size == 2
-
-        Date.new(year.to_i, matches[1].to_i)
-      rescue ArgumentError
-        raise InvalidExpirationDate
-      end
-
-      raise InvalidSecurityCode if params[:security_code].to_s.size < 1 || params[:security_code].to_s.size > 4
-
-      raise InvalidNumberPayments if params[:number_payments].to_i < 1 || params[:number_payments].to_i > 99
     end
 
     # <b>DEPRECATED:</b> Please use <tt>ProtectedCreditCard.save</tt> instead.
@@ -186,25 +161,54 @@ module Braspag
       ProtectedCreditCard.just_click_shop(params)
     end
 
-    def self.info_url
-      connection = Braspag::Connection.instance
-      connection.braspag_url + (connection.production? ? PRODUCTION_INFO_URI : HOMOLOGATION_INFO_URI)
-    end
+    class << self
+      private
 
-    def self.authorize_url
-      Braspag::Connection.instance.braspag_url + AUTHORIZE_URI
-    end
+      def check_params(params)
+        super
 
-    def self.capture_url
-      Braspag::Connection.instance.braspag_url + CAPTURE_URI
-    end
+        [:customer_name, :holder, :card_number, :expiration, :security_code, :number_payments, :type].each do |param|
+          raise IncompleteParams if params[param].nil?
+        end
 
-    def self.partial_capture_url
-      Braspag::Connection.instance.braspag_url + PARTIAL_CAPTURE_URI
-    end
+        raise InvalidHolder if params[:holder].to_s.size < 1 || params[:holder].to_s.size > 100
 
-    def self.cancellation_url
-      Braspag::Connection.instance.braspag_url + CANCELLATION_URI
+        matches = params[:expiration].to_s.match /^(\d{2})\/(\d{2,4})$/
+        raise InvalidExpirationDate unless matches
+        begin
+          year = matches[2].to_i
+          year = "20#{year}" if year.size == 2
+
+          Date.new(year.to_i, matches[1].to_i)
+        rescue ArgumentError
+          raise InvalidExpirationDate
+        end
+
+        raise InvalidSecurityCode if params[:security_code].to_s.size < 1 || params[:security_code].to_s.size > 4
+
+        raise InvalidNumberPayments if params[:number_payments].to_i < 1 || params[:number_payments].to_i > 99
+      end
+
+      def authorize_url
+        Braspag::Connection.instance.braspag_url + AUTHORIZE_URI
+      end
+
+      def capture_url
+        Braspag::Connection.instance.braspag_url + CAPTURE_URI
+      end
+
+      def partial_capture_url
+        Braspag::Connection.instance.braspag_url + PARTIAL_CAPTURE_URI
+      end
+
+      def cancellation_url
+        Braspag::Connection.instance.braspag_url + CANCELLATION_URI
+      end
+
+      def info_url
+        connection = Braspag::Connection.instance
+        connection.braspag_url + (connection.production? ? PRODUCTION_INFO_URI : HOMOLOGATION_INFO_URI)
+      end
     end
   end
 end

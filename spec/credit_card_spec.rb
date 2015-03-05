@@ -2,19 +2,18 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'ostruct'
 
 describe Braspag::CreditCard do
-  let(:braspag_homologation_url) { "https://homologacao.pagador.com.br" }
-  let(:braspag_production_url) { "https://transaction.pagador.com.br" }
-  let(:merchant_id) { "order-id" }
+  let(:braspag_service_url) { "https://homologacao.pagador.com.br" }
 
   let(:connection) { mock(
-    :merchant_id => merchant_id,
+    :merchant_id => 'order-id',
     :protected_card_url => 'https://www.cartaoprotegido.com.br/Services/TestEnvironment',
-    :homologation? => true,
-    :production? => false,
-    braspag_url: braspag_homologation_url
+    :homologation? => (environment == 'homologation'),
+    :production? => (environment == 'production'),
+    braspag_url: braspag_service_url
   ) }
 
   let(:request) { OpenStruct.new :url => operation_url }
+  let(:environment) { 'homologation' }
   let(:response_xml) { nil }
   let(:operation_url) { nil }
 
@@ -249,7 +248,7 @@ describe Braspag::CreditCard do
 
   describe ".void" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/VoidTransaction" }
-    let(:order_id) { "order-id" }
+    let(:order_id) { 'order-id' }
 
     context "valid order id" do
       let(:response_xml) do
@@ -295,6 +294,41 @@ describe Braspag::CreditCard do
 
   describe ".info" do
     let(:operation_url) { "#{connection.braspag_url}/pagador/webservice/pedido.asmx/GetDadosCartao" }
+    let(:order_id) { 'order-id' }
+
+    let(:response_xml) do
+      <<-EOXML
+      <DadosCartao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                   xmlns="http://www.pagador.com.br/">
+        <NumeroComprovante>11111</NumeroComprovante>
+        <Autenticada>false</Autenticada>
+        <NumeroAutorizacao>557593</NumeroAutorizacao>
+        <NumeroCartao>345678*****0007</NumeroCartao>
+        <NumeroTransacao>101001225645</NumeroTransacao>
+      </DadosCartao>
+      EOXML
+    end
+
+    it "returns the credit card info response" do
+      response = Braspag::CreditCard.info(order_id)
+      response.should == {
+        :checking_number => "11111",
+        :certified => "false",
+        :autorization_number => "557593",
+        :card_number => "345678*****0007",
+        :transaction_number => "101001225645"
+      }
+    end
+
+    context "when in production" do
+      let(:environment) { 'production' }
+      let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/pedido.asmx/GetDadosCartao" }
+
+      it "hits the production path" do
+        Braspag::CreditCard.info(order_id)
+      end
+    end
 
     context "when gateway returns a bad response" do
       let(:response_xml) do
@@ -312,71 +346,8 @@ describe Braspag::CreditCard do
       end
 
       it "raises an error" do
-        expect { Braspag::CreditCard.info('order-id') }.to raise_error(Braspag::UnknownError)
+        expect { Braspag::CreditCard.info(order_id) }.to raise_error(Braspag::UnknownError)
       end
-    end
-
-    context "when gateway returns a good response" do
-      let(:response_xml) do
-        <<-EOXML
-        <DadosCartao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                     xmlns="http://www.pagador.com.br/">
-          <NumeroComprovante>11111</NumeroComprovante>
-          <Autenticada>false</Autenticada>
-          <NumeroAutorizacao>557593</NumeroAutorizacao>
-          <NumeroCartao>345678*****0007</NumeroCartao>
-          <NumeroTransacao>101001225645</NumeroTransacao>
-        </DadosCartao>
-        EOXML
-      end
-
-      it "returns the credit card info response" do
-        response = Braspag::CreditCard.info("orderid")
-        response.should == {
-          :checking_number => "11111",
-          :certified => "false",
-          :autorization_number => "557593",
-          :card_number => "345678*****0007",
-          :transaction_number => "101001225645"
-        }
-      end
-    end
-  end
-
-  describe ".info_url" do
-    it "should return the correct info url when connection environment is homologation" do
-      connection.stub(:braspag_url => braspag_homologation_url)
-      connection.should_receive(:production?)
-      .and_return(false)
-
-      Braspag::CreditCard.info_url.should == "#{braspag_homologation_url}/pagador/webservice/pedido.asmx/GetDadosCartao"
-    end
-
-    it "should return the correct info url when connection environment is production" do
-      connection.stub(:braspag_url => braspag_production_url)
-      connection.should_receive(:production?)
-      .and_return(true)
-
-      Braspag::CreditCard.info_url.should == "#{braspag_production_url}/webservices/pagador/pedido.asmx/GetDadosCartao"
-    end
-  end
-
-  describe ".authorize_url .capture_url .cancellation_url" do
-    it "should return the correct credit card creation url when connection environment is homologation" do
-      connection.stub(:braspag_url => braspag_homologation_url)
-
-      Braspag::CreditCard.authorize_url.should == "#{braspag_homologation_url}/webservices/pagador/Pagador.asmx/Authorize"
-      Braspag::CreditCard.capture_url.should == "#{braspag_homologation_url}/webservices/pagador/Pagador.asmx/Capture"
-      Braspag::CreditCard.cancellation_url.should == "#{braspag_homologation_url}/webservices/pagador/Pagador.asmx/VoidTransaction"
-    end
-
-    it "should return the correct credit card creation url when connection environment is production" do
-      connection.stub(:braspag_url => braspag_production_url)
-
-      Braspag::CreditCard.authorize_url.should == "#{braspag_production_url}/webservices/pagador/Pagador.asmx/Authorize"
-      Braspag::CreditCard.capture_url.should == "#{braspag_production_url}/webservices/pagador/Pagador.asmx/Capture"
-      Braspag::CreditCard.cancellation_url.should == "#{braspag_production_url}/webservices/pagador/Pagador.asmx/VoidTransaction"
     end
   end
 
