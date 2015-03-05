@@ -21,7 +21,7 @@ module Braspag
     CANCELLATION_URI = "/webservices/pagador/Pagador.asmx/VoidTransaction"
     PRODUCTION_INFO_URI   = "/webservices/pagador/pedido.asmx/GetDadosCartao"
     HOMOLOGATION_INFO_URI = "/pagador/webservice/pedido.asmx/GetDadosCartao"
-    STATUS_URI = "/webservices/pagador/Pagador.asmx/GetDadosPedido"
+    STATUS_URI = "/webservices/pagador/pedido.asmx/GetDadosPedido"
 
     def self.authorize(params = {})
       connection = Braspag::Connection.instance
@@ -148,10 +148,7 @@ module Braspag
 
       raise InvalidOrderId unless self.valid_order_id?(order_id)
 
-      data = {
-        MAPPING[:order] => order_id,
-        MAPPING[:merchant_id] => connection.merchant_id
-      }
+      data = { :numeroPedido => order_id, :loja => connection.merchant_id }
 
       response = Braspag::Poster.new(status_url).do_post(:order_status, data)
 
