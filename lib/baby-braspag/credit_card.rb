@@ -1,6 +1,5 @@
 module Braspag
   class CreditCard < PaymentMethod
-
     MAPPING = {
       :merchant_id => "merchantId",
       :order => 'order',
@@ -44,13 +43,13 @@ module Braspag
       response = Braspag::Poster.new(authorize_url).do_post(:authorize, data)
 
       Utils::convert_to_map(response.body, {
-          :amount => nil,
-          :number => "authorisationNumber",
-          :message => 'message',
-          :return_code => 'returnCode',
-          :status => 'status',
-          :transaction_id => "transactionId"
-        })
+        :amount => nil,
+        :number => "authorisationNumber",
+        :message => 'message',
+        :return_code => 'returnCode',
+        :status => 'status',
+        :transaction_id => "transactionId"
+      })
     end
 
     def self.capture(order_id)
@@ -67,13 +66,13 @@ module Braspag
       response = Braspag::Poster.new(capture_url).do_post(:capture, data)
 
       Utils::convert_to_map(response.body, {
-          :amount => nil,
-          :number => "authorisationNumber",
-          :message => 'message',
-          :return_code => 'returnCode',
-          :status => 'status',
-          :transaction_id => "transactionId"
-        })
+        :amount => nil,
+        :number => "authorisationNumber",
+        :message => 'message',
+        :return_code => 'returnCode',
+        :status => 'status',
+        :transaction_id => "transactionId"
+      })
     end
 
     def self.partial_capture(order_id, amount)
@@ -91,13 +90,13 @@ module Braspag
       response = Braspag::Poster.new(partial_capture_url).do_post(:partial_capture, data)
 
       Utils::convert_to_map(response.body, {
-          :amount => nil,
-          :number => "authorisationNumber",
-          :message => 'message',
-          :return_code => 'returnCode',
-          :status => 'status',
-          :transaction_id => "transactionId"
-        })
+        :amount => nil,
+        :number => "authorisationNumber",
+        :message => 'message',
+        :return_code => 'returnCode',
+        :status => 'status',
+        :transaction_id => "transactionId"
+      })
     end
 
     def self.void(order_id)
@@ -114,13 +113,13 @@ module Braspag
       response = Braspag::Poster.new(cancellation_url).do_post(:void, data)
 
       Utils::convert_to_map(response.body, {
-          :amount => nil,
-          :number => "authorisationNumber",
-          :message => 'message',
-          :return_code => 'returnCode',
-          :status => 'status',
-          :transaction_id => "transactionId"
-        })
+        :amount => nil,
+        :number => "authorisationNumber",
+        :message => 'message',
+        :return_code => 'returnCode',
+        :status => 'status',
+        :transaction_id => "transactionId"
+      })
     end
 
     def self.info(order_id)
@@ -132,12 +131,12 @@ module Braspag
       response = Braspag::Poster.new(info_url).do_post(:info_credit_card, data)
 
       response = Utils::convert_to_map(response.body, {
-          :checking_number => "NumeroComprovante",
-          :certified => "Autenticada",
-          :autorization_number => "NumeroAutorizacao",
-          :card_number => "NumeroCartao",
-          :transaction_number => "NumeroTransacao"
-        })
+        :checking_number => "NumeroComprovante",
+        :certified => "Autenticada",
+        :autorization_number => "NumeroAutorizacao",
+        :card_number => "NumeroCartao",
+        :transaction_number => "NumeroTransacao"
+      })
 
       raise UnknownError if response[:checking_number].nil?
       response
