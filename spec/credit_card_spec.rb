@@ -4,7 +4,7 @@ require 'ostruct'
 describe Braspag::CreditCard do
   let(:braspag_homologation_url) { "https://homologacao.pagador.com.br" }
   let(:braspag_production_url) { "https://transaction.pagador.com.br" }
-  let(:merchant_id) { "um id qualquer" }
+  let(:merchant_id) { "order-id" }
 
   let(:connection) { mock(
     :merchant_id => merchant_id,
@@ -58,12 +58,12 @@ describe Braspag::CreditCard do
       EOXML
     end
 
-    it "posts the required data for the transaction" do
+    it "request the order authorization" do
       Braspag::CreditCard.authorize(params)
-      request.body.should == {"merchantId"=>"um id qualquer", "order"=>"", "orderId"=>"um order id", "customerName"=>"WWWWWWWWWWWWWWWWWWWWW", "amount"=>"100,00", "paymentMethod"=>997, "holder"=>"Joao Maria Souza", "cardNumber"=>"9999999999", "expiration"=>"10/12", "securityCode"=>"123", "numberPayments"=>1, "typePayment"=>0}
+      request.body.should == {"merchantId"=>"order-id", "order"=>"", "orderId"=>"um order id", "customerName"=>"WWWWWWWWWWWWWWWWWWWWW", "amount"=>"100,00", "paymentMethod"=>997, "holder"=>"Joao Maria Souza", "cardNumber"=>"9999999999", "expiration"=>"10/12", "securityCode"=>"123", "numberPayments"=>1, "typePayment"=>0}
     end
 
-    it "returns a hash" do
+    it "returns the authorization result" do
       response = Braspag::CreditCard.authorize(params)
       response.should == {
         :amount => "5",
@@ -78,55 +78,51 @@ describe Braspag::CreditCard do
 
   describe ".capture" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/Capture" }
-    let(:order_id) { "um id qualquer" }
+    let(:order_id) { "order-id" }
 
-    context "invalid order id" do
-      it "should raise an error" do
-        Braspag::CreditCard.should_receive(:valid_order_id?).with(order_id).and_return(false)
-
-        expect {
-          Braspag::CreditCard.capture(order_id)
-        }.to raise_error(Braspag::InvalidOrderId)
-      end
+    let(:response_xml) do
+      <<-EOXML
+        <?xml version="1.0" encoding="utf-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                       xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount>2</amount>
+          <message>Approved</message>
+          <returnCode>0</returnCode>
+          <status>0</status>
+        </PagadorReturn>
+      EOXML
     end
 
-    context "valid order id" do
-      let(:response_xml) do
-        <<-EOXML
-          <?xml version="1.0" encoding="utf-8"?>
-          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                         xmlns="https://www.pagador.com.br/webservice/pagador">
-            <amount>2</amount>
-            <message>Approved</message>
-            <returnCode>0</returnCode>
-            <status>0</status>
-          </PagadorReturn>
-        EOXML
-      end
+    it "requests the order capture" do
+      Braspag::CreditCard.capture("order id qualquer")
+      request.body.should == {"orderId"=>"order id qualquer", "merchantId"=>"order-id"}
+    end
 
-      it "should return a Hash" do
-        response = Braspag::CreditCard.capture("order id qualquer")
-        response.should == {
-          :amount => "2",
-          :number => nil,
-          :message => "Approved",
-          :return_code => "0",
-          :status => "0",
-          :transaction_id => nil
-        }
-      end
+    it "returns the capture result" do
+      response = Braspag::CreditCard.capture("order id qualquer")
+      response.should == {
+        :amount => "2",
+        :number => nil,
+        :message => "Approved",
+        :return_code => "0",
+        :status => "0",
+        :transaction_id => nil
+      }
+    end
 
-      it "should post capture info" do
-        Braspag::CreditCard.capture("order id qualquer")
-        request.body.should == {"orderId"=>"order id qualquer", "merchantId"=>"um id qualquer"}
+    context "when the order id is invalid" do
+      let(:order_id) { '' }
+
+      it "raises an error" do
+        expect { Braspag::CreditCard.capture(order_id) }.to raise_error(Braspag::InvalidOrderId)
       end
     end
   end
 
   describe ".partial_capture" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/CapturePartial" }
-    let(:order_id) { "um id qualquer" }
+    let(:order_id) { "order-id" }
 
     context "invalid order id" do
       it "should raise an error" do
@@ -164,14 +160,14 @@ describe Braspag::CreditCard do
 
       it "should post capture info" do
         Braspag::CreditCard.partial_capture("order id qualquer", 10.0)
-        request.body.should == {"orderId"=>"order id qualquer", "captureAmount"=>"10,00", "merchantId"=>"um id qualquer"}
+        request.body.should == {"orderId"=>"order id qualquer", "captureAmount"=>"10,00", "merchantId"=>"order-id"}
       end
     end
   end
 
   describe ".void" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/VoidTransaction" }
-    let(:order_id) { "um id qualquer" }
+    let(:order_id) { "order-id" }
 
     context "invalid order id" do
       it "should raise an error" do
@@ -209,7 +205,7 @@ describe Braspag::CreditCard do
 
       it "should post void info" do
         Braspag::CreditCard.void("order id qualquer")
-        request.body.should == {"order"=>"order id qualquer", "merchantId"=>"um id qualquer"}
+        request.body.should == {"order"=>"order id qualquer", "merchantId"=>"order-id"}
       end
     end
   end
