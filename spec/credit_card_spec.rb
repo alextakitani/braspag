@@ -81,7 +81,7 @@ describe Braspag::CreditCard do
         :security_code, :number_payments, :type].each do |param|
         it "raises an error when #{param} parameter is missing" do
           params[param] = nil
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::IncompleteParams
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::IncompleteParams)
         end
       end
 
@@ -89,7 +89,7 @@ describe Braspag::CreditCard do
         before { params[:order_id] = '' }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidOrderId
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidOrderId)
         end
       end
 
@@ -97,7 +97,7 @@ describe Braspag::CreditCard do
         before { params[:payment_method] = 'invalid' }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidPaymentMethod
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidPaymentMethod)
         end
       end
 
@@ -105,7 +105,7 @@ describe Braspag::CreditCard do
         before { params[:customer_name] = 'n' * 256 }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidCustomerName
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidCustomerName)
         end
       end
 
@@ -113,7 +113,7 @@ describe Braspag::CreditCard do
         before { params[:holder] = 'h' * 101 }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidHolder
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidHolder)
         end
       end
 
@@ -121,7 +121,7 @@ describe Braspag::CreditCard do
         before { params[:expiration] = '2011/19/19' }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidExpirationDate
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidExpirationDate)
         end
       end
 
@@ -129,7 +129,7 @@ describe Braspag::CreditCard do
         before { params[:security_code] = '12345' }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidSecurityCode
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidSecurityCode)
         end
       end
 
@@ -137,7 +137,7 @@ describe Braspag::CreditCard do
         before { params[:security_code] = '' }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidSecurityCode
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidSecurityCode)
         end
       end
 
@@ -145,7 +145,7 @@ describe Braspag::CreditCard do
         before { params[:number_payments] = 100 }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidNumberPayments
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidNumberPayments)
         end
       end
 
@@ -153,7 +153,7 @@ describe Braspag::CreditCard do
         before { params[:number_payments] = 0 }
 
         it "raises an error" do
-          expect { Braspag::CreditCard.authorize(params) }.to raise_error Braspag::InvalidNumberPayments
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidNumberPayments)
         end
       end
     end
