@@ -158,7 +158,7 @@ describe Braspag::CreditCard do
     context "when the order id is invalid" do
       let(:order_id) { '' }
 
-      it "should raise an error" do
+      it "raises an error" do
         expect { Braspag::CreditCard.partial_capture(order_id, 10.0) }.to raise_error(Braspag::InvalidOrderId)
       end
     end
@@ -167,13 +167,6 @@ describe Braspag::CreditCard do
   describe ".void" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/VoidTransaction" }
     let(:order_id) { "order-id" }
-
-    context "invalid order id" do
-      it "should raise an error" do
-        Braspag::CreditCard.should_receive(:valid_order_id?).with(order_id).and_return(false)
-        expect { Braspag::CreditCard.void(order_id) }.to raise_error(Braspag::InvalidOrderId)
-      end
-    end
 
     context "valid order id" do
       let(:response_xml) do
@@ -190,8 +183,13 @@ describe Braspag::CreditCard do
         EOXML
       end
 
-      it "should return a Hash" do
-        response = Braspag::CreditCard.void("order id qualquer")
+      it "requests the order cancellation" do
+        Braspag::CreditCard.void(order_id)
+        request.body.should == {"order"=>"order-id", "merchantId"=>"order-id"}
+      end
+
+      it "returns the cancellation response" do
+        response = Braspag::CreditCard.void(order_id)
         response.should == {
           :amount => "2",
           :number => nil,
@@ -201,10 +199,13 @@ describe Braspag::CreditCard do
           :transaction_id => nil
         }
       end
+    end
 
-      it "should post void info" do
-        Braspag::CreditCard.void("order id qualquer")
-        request.body.should == {"order"=>"order id qualquer", "merchantId"=>"order-id"}
+    context "when the order id is invalid" do
+      let(:order_id) { '' }
+
+      it "raises an error" do
+        expect { Braspag::CreditCard.void(order_id) }.to raise_error(Braspag::InvalidOrderId)
       end
     end
   end
@@ -215,39 +216,39 @@ describe Braspag::CreditCard do
     context "when gateway returns a bad response" do
       let(:response_xml) do
         <<-EOXML
-      <DadosCartao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                   xmlns="http://www.pagador.com.br/">
-        <NumeroComprovante></NumeroComprovante>
-        <Autenticada>false</Autenticada>
-        <NumeroAutorizacao>557593</NumeroAutorizacao>
-        <NumeroCartao>345678*****0007</NumeroCartao>
-        <NumeroTransacao>101001225645</NumeroTransacao>
-      </DadosCartao>
+        <DadosCartao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                     xmlns="http://www.pagador.com.br/">
+          <NumeroComprovante></NumeroComprovante>
+          <Autenticada>false</Autenticada>
+          <NumeroAutorizacao>557593</NumeroAutorizacao>
+          <NumeroCartao>345678*****0007</NumeroCartao>
+          <NumeroTransacao>101001225645</NumeroTransacao>
+        </DadosCartao>
         EOXML
       end
 
-      it "should raise an error when Braspag returned an invalid xml as response" do
-        expect { Braspag::CreditCard.info("orderid") }.to raise_error(Braspag::UnknownError)
+      it "raises an error" do
+        expect { Braspag::CreditCard.info('order-id') }.to raise_error(Braspag::UnknownError)
       end
     end
 
     context "when gateway returns a good response" do
       let(:response_xml) do
         <<-EOXML
-      <DadosCartao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                   xmlns="http://www.pagador.com.br/">
-        <NumeroComprovante>11111</NumeroComprovante>
-        <Autenticada>false</Autenticada>
-        <NumeroAutorizacao>557593</NumeroAutorizacao>
-        <NumeroCartao>345678*****0007</NumeroCartao>
-        <NumeroTransacao>101001225645</NumeroTransacao>
-      </DadosCartao>
+        <DadosCartao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                     xmlns="http://www.pagador.com.br/">
+          <NumeroComprovante>11111</NumeroComprovante>
+          <Autenticada>false</Autenticada>
+          <NumeroAutorizacao>557593</NumeroAutorizacao>
+          <NumeroCartao>345678*****0007</NumeroCartao>
+          <NumeroTransacao>101001225645</NumeroTransacao>
+        </DadosCartao>
         EOXML
       end
 
-      it "should return a Hash when Braspag returned a valid xml as response" do
+      it "returns the credit card info response" do
         response = Braspag::CreditCard.info("orderid")
         response.should == {
           :checking_number => "11111",
