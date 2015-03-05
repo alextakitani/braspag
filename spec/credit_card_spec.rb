@@ -349,6 +349,58 @@ describe Braspag::CreditCard do
     end
   end
 
+  describe ".status" do
+    let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/GetDadosPedido" }
+    let(:order_id) { 'order-id' }
+
+    let(:response_xml) do
+      <<-EOXML
+        <?xml version="1.0" encoding="utf-8"?>
+        <DadosPedido xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.pagador.com.br/">
+          <CodigoAutorizacao>012543   </CodigoAutorizacao>
+          <CodigoPagamento>42</CodigoPagamento>
+          <FormaPagamento>Redecard Webservice PreAuth</FormaPagamento>
+          <NumeroParcelas>1</NumeroParcelas>
+          <Status>3</Status>
+          <Valor>35.46</Valor>
+          <DataPagamento>2/28/2015 12:00:00 AM</DataPagamento>
+          <DataPedido>2/28/2015 9:56:35 AM</DataPedido>
+          <TransId>0301122</TransId>
+        </DadosPedido>
+      EOXML
+    end
+
+    it "requests the order status" do
+      Braspag::CreditCard.status(order_id)
+      request.body.should == {"order"=>"order-id", "merchantId"=>"order-id"}
+    end
+
+    it "returns the status response" do
+      response = Braspag::CreditCard.status(order_id)
+      response.should == {
+        :authorization_code=>"012543   ",
+        :payment_code=>"42",
+        :payment_method=>"Redecard Webservice PreAuth",
+        :installments=>"1",
+        :status=>"3",
+        :value=>"35.46",
+        :payment_date=>"2/28/2015 12:00:00 AM",
+        :order_date=>"2/28/2015 9:56:35 AM",
+        :transaction_id=>"0301122",
+        :error_code=>nil,
+        :error_message=>nil
+      }
+    end
+
+    context "when the order id is invalid" do
+      let(:order_id) { '' }
+
+      it "raises an error" do
+        expect { Braspag::CreditCard.status(order_id) }.to raise_error(Braspag::InvalidOrderId)
+      end
+    end
+  end
+
   describe ".save .get .just_click_shop" do
     it "should delegate to ProtectedCreditCard class" do
       Braspag::ProtectedCreditCard.should_receive(:save).with({})

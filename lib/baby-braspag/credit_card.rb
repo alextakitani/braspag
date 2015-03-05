@@ -21,6 +21,7 @@ module Braspag
     CANCELLATION_URI = "/webservices/pagador/Pagador.asmx/VoidTransaction"
     PRODUCTION_INFO_URI   = "/webservices/pagador/pedido.asmx/GetDadosCartao"
     HOMOLOGATION_INFO_URI = "/pagador/webservice/pedido.asmx/GetDadosCartao"
+    STATUS_URI = "/webservices/pagador/Pagador.asmx/GetDadosPedido"
 
     def self.authorize(params = {})
       connection = Braspag::Connection.instance
@@ -142,6 +143,33 @@ module Braspag
       response
     end
 
+    def self.status(order_id)
+      connection = Braspag::Connection.instance
+
+      raise InvalidOrderId unless self.valid_order_id?(order_id)
+
+      data = {
+        MAPPING[:order] => order_id,
+        MAPPING[:merchant_id] => connection.merchant_id
+      }
+
+      response = Braspag::Poster.new(status_url).do_post(:order_status, data)
+
+      Utils::convert_to_map(response.body, {
+        :authorization_code => "CodigoAutorizacao",
+        :payment_code => "CodigoPagamento",
+        :payment_method => "FormaPagamento",
+        :installments => "NumeroParcelas",
+        :status => "Status",
+        :value => "Valor",
+        :payment_date => "DataPagamento",
+        :order_date => "DataPedido",
+        :transaction_id => "TransId",
+        :error_code => "CodigoErro",
+        :error_message => "MensagemErro"
+      })
+    end
+
     # <b>DEPRECATED:</b> Please use <tt>ProtectedCreditCard.save</tt> instead.
     def self.save(params)
       warn "[DEPRECATION] `CreditCard.save` is deprecated.  Please use `ProtectedCreditCard.save` instead."
@@ -207,6 +235,10 @@ module Braspag
       def info_url
         connection = Braspag::Connection.instance
         connection.braspag_url + (connection.production? ? PRODUCTION_INFO_URI : HOMOLOGATION_INFO_URI)
+      end
+
+      def status_url
+        Braspag::Connection.instance.braspag_url + STATUS_URI
       end
     end
   end
