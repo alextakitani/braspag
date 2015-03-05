@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'ostruct'
 
 describe Braspag::CreditCard do
-  let(:braspag_service_url) { "https://homologacao.pagador.com.br" }
+  let(:braspag_service_url) { 'https://homologacao.pagador.com.br' }
 
   let(:connection) { mock(
     :merchant_id => 'merchant-id',
@@ -30,13 +30,13 @@ describe Braspag::CreditCard do
 
     let(:params) { {
       :order_id => order_id,
-      :customer_name => "W" * 21,
-      :amount => "100.00",
+      :customer_name => 'W' * 21,
+      :amount => '100.00',
       :payment_method => :redecard,
-      :holder => "Joao Maria Souza",
-      :card_number => "9" * 10,
-      :expiration => "10/12",
-      :security_code => "123",
+      :holder => 'Joao Maria Souza',
+      :card_number => '9' * 10,
+      :expiration => '10/12',
+      :security_code => '123',
       :number_payments => 1,
       :type => 0
     } }
@@ -60,18 +60,31 @@ describe Braspag::CreditCard do
 
     it "request the order authorization" do
       Braspag::CreditCard.authorize(params)
-      request.body.should == {"merchantId"=>"merchant-id", "order"=>"", "orderId"=>"order-id", "customerName"=>"WWWWWWWWWWWWWWWWWWWWW", "amount"=>"100,00", "paymentMethod"=>997, "holder"=>"Joao Maria Souza", "cardNumber"=>"9999999999", "expiration"=>"10/12", "securityCode"=>"123", "numberPayments"=>1, "typePayment"=>0}
+      request.body.should == {
+        'merchantId' => 'merchant-id',
+        'order' => '',
+        'orderId' => 'order-id',
+        'customerName' => 'WWWWWWWWWWWWWWWWWWWWW',
+        'amount' => '100,00',
+        'paymentMethod' => 997,
+        'holder' => 'Joao Maria Souza',
+        'cardNumber' => '9999999999',
+        'expiration' => '10/12',
+        'securityCode' => '123',
+        'numberPayments' => 1,
+        'typePayment' => 0
+      }
     end
 
     it "returns the authorization result" do
       response = Braspag::CreditCard.authorize(params)
       response.should == {
-        :amount => "5",
-        :message => "Transaction Successful",
-        :number => "733610",
-        :return_code => "7",
-        :status => "2",
-        :transaction_id => "0"
+        :amount => '5',
+        :message => 'Transaction Successful',
+        :number => '733610',
+        :return_code => '7',
+        :status => '2',
+        :transaction_id => '0'
       }
     end
 
@@ -160,7 +173,7 @@ describe Braspag::CreditCard do
 
   describe ".capture" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/Capture" }
-    let(:order_id) { "order-id" }
+    let(:order_id) { 'order-id' }
 
     let(:response_xml) do
       <<-EOXML
@@ -177,18 +190,18 @@ describe Braspag::CreditCard do
     end
 
     it "requests the order capture" do
-      Braspag::CreditCard.capture("order id qualquer")
-      request.body.should == {"orderId"=>"order id qualquer", "merchantId"=>"merchant-id"}
+      Braspag::CreditCard.capture('order id qualquer')
+      request.body.should == { 'orderId' => 'order id qualquer', 'merchantId' => 'merchant-id' }
     end
 
     it "returns the capture result" do
-      response = Braspag::CreditCard.capture("order id qualquer")
+      response = Braspag::CreditCard.capture('order id qualquer')
       response.should == {
-        :amount => "2",
+        :amount => '2',
         :number => nil,
-        :message => "Approved",
-        :return_code => "0",
-        :status => "0",
+        :message => 'Approved',
+        :return_code => '0',
+        :status => '0',
         :transaction_id => nil
       }
     end
@@ -204,7 +217,7 @@ describe Braspag::CreditCard do
 
   describe ".partial_capture" do
     let(:operation_url) { "#{connection.braspag_url}/webservices/pagador/Pagador.asmx/CapturePartial" }
-    let(:order_id) { "order-id" }
+    let(:order_id) { 'order-id' }
 
     let(:response_xml) do
       <<-EOXML
@@ -222,17 +235,17 @@ describe Braspag::CreditCard do
 
     it "requests the order partial capture" do
       Braspag::CreditCard.partial_capture(order_id, 10.0)
-      request.body.should == {"orderId"=>"order-id", "captureAmount"=>"10,00", "merchantId"=>"merchant-id"}
+      request.body.should == { 'orderId' => 'order-id', 'captureAmount' => '10,00', 'merchantId' => 'merchant-id' }
     end
 
     it "returns the partial capture response" do
       response = Braspag::CreditCard.partial_capture(order_id, 10.0)
       response.should == {
-        :amount => "2",
+        :amount => '2',
         :number => nil,
-        :message => "Approved",
-        :return_code => "0",
-        :status => "0",
+        :message => 'Approved',
+        :return_code => '0',
+        :status => '0',
         :transaction_id => nil
       }
     end
@@ -266,17 +279,17 @@ describe Braspag::CreditCard do
 
     it "requests the order cancellation" do
       Braspag::CreditCard.void(order_id)
-      request.body.should == {"order"=>"order-id", "merchantId"=>"merchant-id"}
+      request.body.should == { 'order' => 'order-id', 'merchantId' => 'merchant-id' }
     end
 
     it "returns the cancellation response" do
       response = Braspag::CreditCard.void(order_id)
       response.should == {
-        :amount => "2",
+        :amount => '2',
         :number => nil,
-        :message => "Approved",
-        :return_code => "0",
-        :status => "0",
+        :message => 'Approved',
+        :return_code => '0',
+        :status => '0',
         :transaction_id => nil
       }
     end
@@ -311,11 +324,11 @@ describe Braspag::CreditCard do
     it "returns the credit card info response" do
       response = Braspag::CreditCard.info(order_id)
       response.should == {
-        :checking_number => "11111",
-        :certified => "false",
-        :autorization_number => "557593",
-        :card_number => "345678*****0007",
-        :transaction_number => "101001225645"
+        :checking_number => '11111',
+        :certified => 'false',
+        :autorization_number => '557593',
+        :card_number => '345678*****0007',
+        :transaction_number => '101001225645'
       }
     end
 
@@ -378,15 +391,15 @@ describe Braspag::CreditCard do
     it "returns the status response" do
       response = Braspag::CreditCard.status(order_id)
       response.should == {
-        :authorization_code=>"012543   ",
-        :payment_code=>"42",
-        :payment_method=>"Redecard Webservice PreAuth",
-        :installments=>"1",
-        :status=>"3",
-        :value=>"35.46",
-        :payment_date=>"2/28/2015 12:00:00 AM",
-        :order_date=>"2/28/2015 9:56:35 AM",
-        :transaction_id=>"0301122",
+        :authorization_code=>'012543   ',
+        :payment_code=>'42',
+        :payment_method=>'Redecard Webservice PreAuth',
+        :installments=>'1',
+        :status=>'3',
+        :value=>'35.46',
+        :payment_date=>'2/28/2015 12:00:00 AM',
+        :order_date=>'2/28/2015 9:56:35 AM',
+        :transaction_id=>'0301122',
         :error_code=>nil,
         :error_message=>nil
       }
