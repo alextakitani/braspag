@@ -137,6 +137,24 @@ describe Braspag::CreditCard do
         end
       end
 
+      context "when expiration is in valid format with invalid date" do
+        before { params[:expiration] = '2015/19' }
+
+        it "raises an error" do
+          expect { Braspag::CreditCard.authorize(params) }.to raise_error(Braspag::InvalidExpirationDate)
+        end
+      end
+
+      ['01/15', '01/2015'].each do |expiration|
+        context "when expiration is in #{expiration} format" do
+          before { params[:expiration] = expiration }
+
+          it "raises no error" do
+            expect { Braspag::CreditCard.authorize(params) }.not_to raise_error
+          end
+        end
+      end
+
       context "when security code is too long" do
         before { params[:security_code] = '12345' }
 

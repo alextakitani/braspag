@@ -199,14 +199,9 @@ module Braspag
 
         matches = params[:expiration].to_s.match /^(\d{2})\/(\d{2,4})$/
         raise InvalidExpirationDate unless matches
-        begin
-          year = matches[2].to_i
-          year = "20#{year}" if year.size == 2
 
-          Date.new(year.to_i, matches[1].to_i)
-        rescue ArgumentError
-          raise InvalidExpirationDate
-        end
+        year = matches[2].size == 4 ? matches[2] : "20#{matches[2]}"
+        raise if !Date.valid_date?(year.to_i, matches[1].to_i, 1)
 
         raise InvalidSecurityCode if params[:security_code].to_s.size < 1 || params[:security_code].to_s.size > 4
 
