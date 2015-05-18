@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency 'httpi', '~> 2.4.0'
+  s.add_dependency 'httpi', '~> 2.3'
   s.add_dependency 'json', '>= 1.6.1'
   s.add_dependency 'nokogiri', '~> 1.6.1'
   s.add_dependency 'savon', '~> 2.11.0'
