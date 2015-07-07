@@ -1,5 +1,9 @@
 # RELEASES
 
+## 0.4.1 - 07/07/2015
+
+5d754a Corrigindo consulta de cartão protegido.
+
 ## 0.2.1 - 11/08/2014
 
 Log das operações `SaveCreditCard` e `JustClickShop` do serviço `CartaoProtegido`.
