@@ -176,21 +176,21 @@ describe Braspag::ProtectedCreditCard do
     end
   end
 
-      class SavonClientTest
-        attr_accessor :response
-        attr_reader :method
+  class SavonClientTest
+    attr_accessor :response
+    attr_reader :method
 
-        def call(method, options, &block)
-          @method  = method
-          @options = options
+    def call(method, options, &block)
+      @method  = method
+      @options = options
 
-          @response
-        end
+      @response
+    end
 
-        def options
-          OpenStruct.new(@options || {})
-        end
-      end
+    def options
+      OpenStruct.new(@options || {})
+    end
+  end
 
   describe ".get" do
     let(:get_protected_card_url) { "http://braspag/bla" }
