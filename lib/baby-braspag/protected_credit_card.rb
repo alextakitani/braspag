@@ -23,9 +23,7 @@ module Braspag
       :security_code => "SecurityCode"
     }
 
-    SAVE_PROTECTED_CARD_URI = "/CartaoProtegido.asmx?wsdl"
-    GET_PROTECTED_CARD_URI = "/CartaoProtegido.asmx/GetCreditCard"
-    JUST_CLICK_SHOP_URI = "/CartaoProtegido.asmx?wsdl"
+    PROTECTED_CARD_URI = "/CartaoProtegido.asmx?wsdl"
 
     # saves credit card in Braspag PCI Compliant
     def self.save(params = {})
@@ -45,7 +43,7 @@ module Braspag
 
       Braspag.logger.info("[Braspag] #save_credit_card, data: #{data_for_logging}") if Braspag.logger
 
-      client = savon_client(self.save_protected_card_url)
+      client = savon_client(self.protected_card_url)
       response = client.call(:save_credit_card, :message => data)
 
       # We do not want to let any sensitive data exposed on log files.
@@ -62,16 +60,18 @@ module Braspag
 
       raise InvalidJustClickKey unless valid_just_click_key?(just_click_key)
 
-      data = { 'getCreditCardRequestWS' => {:loja => connection.merchant_id, :justClickKey => just_click_key} }
+      request_data = { 'MerchantKey' => connection.merchant_id, 'JustClickKey' => just_click_key }
+      data = { 'getCreditCardRequestWS' => request_data }
 
-      response = Braspag::Poster.new(self.get_protected_card_url).do_post(:get_protected_card, data)
+      client = savon_client(self.protected_card_url)
+      response = client.call(:get_credit_card, message: data)
 
-      response = Utils::convert_to_map(response.body, {
-          :holder => "CardHolder",
-          :card_number => "CardNumber",
-          :expiration => "CardExpiration",
-          :masked_card_number => "MaskedCardNumber"
-        })
+      response = Utils::convert_to_map(response.to_s, {
+          :holder => 'CardHolder',
+          :card_number => 'CardNumber',
+          :expiration => 'CardExpiration',
+          :masked_card_number => 'MaskedCardNumber'
+      })
 
       raise UnknownError if response[:card_number].nil?
       response
@@ -105,7 +105,7 @@ module Braspag
 
       Braspag.logger.info("[Braspag] #just_click_shop, data: #{data_for_logging}") if Braspag.logger
 
-      client = savon_client(self.just_click_shop_url)
+      client = savon_client(self.protected_card_url)
       response = client.call(:just_click_shop, :message => data)
 
       Braspag.logger.info("[Braspag] #just_click_shop returns: #{response}") if Braspag.logger
@@ -150,16 +150,8 @@ module Braspag
       (just_click_key.is_a?(String) && just_click_key.size == 36)
     end
 
-    def self.save_protected_card_url
-      Braspag::Connection.instance.protected_card_url + SAVE_PROTECTED_CARD_URI
-    end
-
-    def self.get_protected_card_url
-      Braspag::Connection.instance.protected_card_url + GET_PROTECTED_CARD_URI
-    end
-
-    def self.just_click_shop_url
-      Braspag::Connection.instance.protected_card_url + JUST_CLICK_SHOP_URI
+    def self.protected_card_url
+      Braspag::Connection.instance.protected_card_url + PROTECTED_CARD_URI
     end
 
     def self.savon_client(url)

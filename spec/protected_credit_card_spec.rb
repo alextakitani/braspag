@@ -69,7 +69,7 @@ describe Braspag::ProtectedCreditCard do
       end
 
       before do
-        Braspag::ProtectedCreditCard.should_receive(:save_protected_card_url)
+        Braspag::ProtectedCreditCard.should_receive(:protected_card_url)
         Braspag::ProtectedCreditCard.should_receive(:check_protected_card_params)
                            .and_return(true)
         @connection.should_receive(:savon_client).and_return(savon_double)
@@ -158,7 +158,7 @@ describe Braspag::ProtectedCreditCard do
       before do
         Braspag::ProtectedCreditCard.should_receive(:check_protected_card_params)
                             .and_return(true)
-        Braspag::ProtectedCreditCard.should_receive(:save_protected_card_url)
+        Braspag::ProtectedCreditCard.should_receive(:protected_card_url)
                             .and_return(save_protected_card_url)
         @connection.should_receive(:savon_client).and_return(savon_double)
         savon_double.should_receive(:call).and_return(response)
@@ -176,36 +176,71 @@ describe Braspag::ProtectedCreditCard do
     end
   end
 
+  class SavonClientTest
+    attr_accessor :response
+    attr_reader :method
+
+    def call(method, options, &block)
+      @method  = method
+      @options = options
+
+      @response
+    end
+
+    def options
+      OpenStruct.new(@options || {})
+    end
+  end
+
   describe ".get" do
     let(:get_protected_card_url) { "http://braspag/bla" }
 
     let(:invalid_xml) do
       <<-EOXML
-      <CartaoProtegidoReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                   xmlns="http://www.pagador.com.br/">
-        <CardHolder>Joao Maria Souza</CardHolder>
-        <CardNumber></CardNumber>
-        <CardExpiration>10/12</CardExpiration>
-        <MaskedCardNumber>******9999</MaskedCardNumber>
-      </CartaoProtegidoReturn>
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <soap:Body>
+          <GetCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+            <GetCreditCardResult>
+              <Success>false</Success>
+              <CorrelationId xsi:nil="true"/>
+              <ErrorReportCollection>
+                <ErrorReport>
+                  <ErrorCode>720</ErrorCode>
+                  <ErrorMessage>Merchant JustClick not found</ErrorMessage>
+                </ErrorReport>
+              </ErrorReportCollection>
+            </GetCreditCardResult>
+          </GetCreditCardResponse>
+        </soap:Body>
+      </soap:Envelope>
       EOXML
     end
 
     let(:valid_xml) do
       <<-EOXML
-      <CartaoProtegidoReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                   xmlns="http://www.pagador.com.br/">
-        <CardHolder>Joao Maria Souza</CardHolder>
-        <CardNumber>9999999999</CardNumber>
-        <CardExpiration>10/12</CardExpiration>
-        <MaskedCardNumber>******9999</MaskedCardNumber>
-      </CartaoProtegidoReturn>
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <soap:Body>
+          <GetCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+            <GetCreditCardResult>
+              <Success>true</Success>
+              <CorrelationId xsi:nil="true"/>
+              <ErrorReportCollection/>
+              <CardHolder>TESTE HOLDER</CardHolder>
+              <CardNumber>0000000000000001</CardNumber>
+              <CardExpiration>12/2021</CardExpiration>
+              <MaskedCardNumber>000000******0001</MaskedCardNumber>
+            </GetCreditCardResult>
+          </GetCreditCardResponse>
+        </soap:Body>
+      </soap:Envelope>
       EOXML
     end
 
     let(:logger) { mock(:info => nil) }
+    let(:savon_client) { SavonClientTest.new }
+
     before { Braspag.logger = logger }
 
     it "should raise an error when just click key is not valid" do
@@ -219,10 +254,8 @@ describe Braspag::ProtectedCreditCard do
     end
 
     it "should raise an error when Braspag returned an invalid xml as response" do
-      FakeWeb.register_uri(:post, get_protected_card_url, :body => invalid_xml)
-
-      Braspag::ProtectedCreditCard.should_receive(:get_protected_card_url)
-                         .and_return(get_protected_card_url)
+      Braspag::ProtectedCreditCard.should_receive(:savon_client)
+        .and_return(savon_client)
 
       expect {
         Braspag::ProtectedCreditCard.get("b0b0b0b0-bbbb-4d4d-bd27-f1f1f1ededed")
@@ -230,20 +263,26 @@ describe Braspag::ProtectedCreditCard do
     end
 
     it "should return a Hash when Braspag returned a valid xml as response" do
-      FakeWeb.register_uri(:post, get_protected_card_url, :body => valid_xml)
-
-      Braspag::ProtectedCreditCard.should_receive(:get_protected_card_url)
+      Braspag::ProtectedCreditCard.should_receive(:protected_card_url)
                          .and_return(get_protected_card_url)
 
-      response = Braspag::ProtectedCreditCard.get("b0b0b0b0-bbbb-4d4d-bd27-f1f1f1ededed")
-      response.should be_kind_of Hash
+      savon_client.response = valid_xml
 
-      response.should == {
-        :holder => "Joao Maria Souza",
-        :expiration => "10/12",
-        :card_number => "9" * 10,
-        :masked_card_number => "*" * 6 + "9" * 4
+      Braspag::ProtectedCreditCard.should_receive(:savon_client)
+        .and_return(savon_client)
+
+      response = Braspag::ProtectedCreditCard.get("b0b0b0b0-bbbb-4d4d-bd27-f1f1f1ededed")
+
+      expect(response).to be_kind_of Hash
+
+      expected = {
+        :holder => "TESTE HOLDER",
+        :expiration => "12/2021",
+        :card_number => "0000000000000001",
+        :masked_card_number =>  "000000******0001"
       }
+
+      expect(response).to eq(expected)
     end
 
   end
@@ -263,22 +302,6 @@ describe Braspag::ProtectedCreditCard do
       } }
 
       let(:logger) { mock(:info => nil) }
-
-      class SavonClientTest
-        attr_accessor :response
-        attr_reader :method
-
-        def call(method, options, &block)
-          @method  = method
-          @options = options
-
-          @response
-        end
-
-        def options
-          OpenStruct.new(@options || {})
-        end
-      end
 
       before do
         Braspag.stub(:logger => logger)
@@ -360,11 +383,10 @@ describe Braspag::ProtectedCreditCard do
       end
     end
 
-    it ".save_protected_card_url .get_protected_card_url" do
+    it ".protected_card_url" do
       @connection.stub(:protected_card_url => braspag_homologation_protected_card_url)
 
-      Braspag::ProtectedCreditCard.save_protected_card_url.should == "#{braspag_homologation_protected_card_url}/CartaoProtegido.asmx?wsdl"
-      Braspag::ProtectedCreditCard.get_protected_card_url.should == "#{braspag_homologation_protected_card_url}/CartaoProtegido.asmx/GetCreditCard"
+      expect(Braspag::ProtectedCreditCard.protected_card_url).to eq("#{braspag_homologation_protected_card_url}/CartaoProtegido.asmx?wsdl")
     end
 
   end
