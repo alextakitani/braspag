@@ -6,6 +6,7 @@ module Braspag
 
     def self.convert_to_map(document, map = {})
       document = Nokogiri::XML(document)
+      document.remove_namespaces!
 
       map.each do |key, value|
         if value.is_a?(String) || value.nil?
