@@ -1,0 +1,192 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+development	/home/alex/Projetos/braspag/config/braspag.yml	/^development:$/;"	function	line:1
+environment	/home/alex/Projetos/braspag/config/braspag.yml	/^  environment: "homologation"$/;"	function	line:2
+merchant_id	/home/alex/Projetos/braspag/config/braspag.yml	/^  merchant_id: "{84BE7E7F-698A-6C74-F820-AE359C2A07C2}"$/;"	function	line:3
+crypto_url	/home/alex/Projetos/braspag/config/braspag.yml	/^  crypto_url: "http:\/\/localhost:9292"$/;"	function	line:4
+crypto_key	/home/alex/Projetos/braspag/config/braspag.yml	/^  crypto_key: "1234561246"$/;"	function	line:5
+test	/home/alex/Projetos/braspag/config/braspag.yml	/^test:$/;"	function	line:7
+environment	/home/alex/Projetos/braspag/config/braspag.yml	/^  environment: "homologation"$/;"	function	line:8
+merchant_id	/home/alex/Projetos/braspag/config/braspag.yml	/^  merchant_id: "{84BE7E7F-698A-6C74-F820-AE359C2A07C2}"$/;"	function	line:9
+crypto_url	/home/alex/Projetos/braspag/config/braspag.yml	/^  crypto_url: "http:\/\/localhost:9292"$/;"	function	line:10
+crypto_key	/home/alex/Projetos/braspag/config/braspag.yml	/^  crypto_key: "1234561246"$/;"	function	line:11
+production	/home/alex/Projetos/braspag/config/braspag.yml	/^production:$/;"	function	line:13
+environment	/home/alex/Projetos/braspag/config/braspag.yml	/^  environment: "production"$/;"	function	line:14
+merchant_id	/home/alex/Projetos/braspag/config/braspag.yml	/^  merchant_id: "{84BE7E7F-698A-6C74-F820-AE359C2A07C2}"$/;"	function	line:15
+crypto_url	/home/alex/Projetos/braspag/config/braspag.yml	/^  crypto_url: "http:\/\/localhost:9292"$/;"	function	line:16
+crypto_key	/home/alex/Projetos/braspag/config/braspag.yml	/^  crypto_key: "1234561246"$/;"	function	line:17
+Braspag	/home/alex/Projetos/braspag/lib/generators/braspag/install/install_generator.rb	/^module Braspag$/;"	module	line:1
+Generators	/home/alex/Projetos/braspag/lib/generators/braspag/install/install_generator.rb	/^  module Generators$/;"	module	line:2	class:Braspag
+InstallGenerator	/home/alex/Projetos/braspag/lib/generators/braspag/install/install_generator.rb	/^    class InstallGenerator < ::Rails::Generators::Base$/;"	class	line:3	class:Braspag.Generators
+source_root	/home/alex/Projetos/braspag/lib/generators/braspag/install/install_generator.rb	/^      def self.source_root$/;"	singleton method	line:6	class:Braspag.Generators.InstallGenerator
+copy_config_file	/home/alex/Projetos/braspag/lib/generators/braspag/install/install_generator.rb	/^      def copy_config_file$/;"	method	line:10	class:Braspag.Generators.InstallGenerator
+development	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^development:$/;"	function	line:1
+environment	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  environment: "homologation"$/;"	function	line:2
+merchant_id	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  merchant_id: "{YOUR_MERCHANT_ID_ON_BRASPAG}"$/;"	function	line:3
+crypto_url	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  crypto_url: "http:\/\/localhost:9292"$/;"	function	line:4
+crypto_key	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  crypto_key: "1234561246"$/;"	function	line:5
+test	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^test:$/;"	function	line:7
+environment	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  environment: "homologation"$/;"	function	line:8
+merchant_id	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  merchant_id: "{YOUR_MERCHANT_ID_ON_BRASPAG}"$/;"	function	line:9
+crypto_url	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  crypto_url: "http:\/\/localhost:9292"$/;"	function	line:10
+crypto_key	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  crypto_key: "1234561246"$/;"	function	line:11
+production	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^production:$/;"	function	line:13
+environment	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  environment: "production"$/;"	function	line:14
+merchant_id	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  merchant_id: "{YOUR_MERCHANT_ID_ON_BRASPAG}"$/;"	function	line:15
+crypto_url	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  crypto_url: "http:\/\/localhost:9292"$/;"	function	line:16
+crypto_key	/home/alex/Projetos/braspag/lib/generators/braspag/install/templates/config/braspag.yml	/^  crypto_key: "1234561246"$/;"	function	line:17
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^module Braspag$/;"	module	line:21
+logger	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.logger=(value)$/;"	singleton method	line:22	class:Braspag
+logger	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.logger$/;"	singleton method	line:26	class:Braspag
+config_file_path	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.config_file_path=(path)$/;"	singleton method	line:30	class:Braspag
+config_file_path	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.config_file_path$/;"	singleton method	line:34	class:Braspag
+proxy_address	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.proxy_address=(value)$/;"	singleton method	line:38	class:Braspag
+proxy_address	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.proxy_address$/;"	singleton method	line:42	class:Braspag
+http_global_options	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.http_global_options=(options_hash)$/;"	singleton method	line:46	class:Braspag
+http_global_options	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.http_global_options$/;"	singleton method	line:50	class:Braspag
+savon_global_options	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.savon_global_options=(options_hash)$/;"	singleton method	line:54	class:Braspag
+savon_global_options	/home/alex/Projetos/braspag/lib/baby-braspag.rb	/^  def self.savon_global_options$/;"	singleton method	line:58	class:Braspag
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/utils.rb	/^module Braspag$/;"	module	line:1
+Utils	/home/alex/Projetos/braspag/lib/baby-braspag/utils.rb	/^  class Utils$/;"	class	line:2	class:Braspag
+convert_decimal_to_string	/home/alex/Projetos/braspag/lib/baby-braspag/utils.rb	/^    def self.convert_decimal_to_string(value)$/;"	singleton method	line:3	class:Braspag.Utils
+convert_to_map	/home/alex/Projetos/braspag/lib/baby-braspag/utils.rb	/^    def self.convert_to_map(document, map = {})$/;"	singleton method	line:7	class:Braspag.Utils
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/webservice.rb	/^module Braspag$/;"	module	line:1
+Crypto	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/webservice.rb	/^  module Crypto$/;"	module	line:2	class:Braspag
+Webservice	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/webservice.rb	/^    class Webservice$/;"	class	line:3	class:Braspag.Crypto
+encrypt	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/webservice.rb	/^      def self.encrypt(map)$/;"	singleton method	line:4	class:Braspag.Crypto.Webservice
+decrypt	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/webservice.rb	/^      def self.decrypt(encripted_text)$/;"	singleton method	line:48	class:Braspag.Crypto.Webservice
+uri	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/webservice.rb	/^      def self.uri$/;"	singleton method	line:85	class:Braspag.Crypto.Webservice
+convert_request_to_map	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/webservice.rb	/^      def self.convert_request_to_map(document)$/;"	singleton method	line:90	class:Braspag.Crypto.Webservice
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/jar_webservice.rb	/^module Braspag$/;"	module	line:1
+Crypto	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/jar_webservice.rb	/^  module Crypto$/;"	module	line:2	class:Braspag
+JarWebservice	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/jar_webservice.rb	/^    class JarWebservice$/;"	class	line:3	class:Braspag.Crypto
+encrypt	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/jar_webservice.rb	/^      def self.encrypt(map)$/;"	singleton method	line:4	class:Braspag.Crypto.JarWebservice
+decrypt	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/jar_webservice.rb	/^      def self.decrypt(encrypted, fields)$/;"	singleton method	line:36	class:Braspag.Crypto.JarWebservice
+encrypt_uri	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/jar_webservice.rb	/^      def self.encrypt_uri$/;"	singleton method	line:79	class:Braspag.Crypto
+decrypt_uri	/home/alex/Projetos/braspag/lib/baby-braspag/crypto/jar_webservice.rb	/^      def self.decrypt_uri$/;"	singleton method	line:84	class:Braspag.Crypto
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/eft.rb	/^module Braspag$/;"	module	line:1
+Eft	/home/alex/Projetos/braspag/lib/baby-braspag/eft.rb	/^  class Eft < PaymentMethod$/;"	class	line:2	class:Braspag
+generate	/home/alex/Projetos/braspag/lib/baby-braspag/eft.rb	/^    def self.generate(params, crypto_strategy = nil)$/;"	singleton method	line:26	class:Braspag.Eft
+normalize_params	/home/alex/Projetos/braspag/lib/baby-braspag/eft.rb	/^    def self.normalize_params(params)$/;"	singleton method	line:63	class:Braspag.Eft
+check_params	/home/alex/Projetos/braspag/lib/baby-braspag/eft.rb	/^    def self.check_params(params)$/;"	singleton method	line:74	class:Braspag.Eft
+action_url	/home/alex/Projetos/braspag/lib/baby-braspag/eft.rb	/^    def self.action_url$/;"	singleton method	line:86	class:Braspag.Eft
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^module Braspag$/;"	module	line:1
+CreditCard	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^  class CreditCard < PaymentMethod$/;"	class	line:2	class:Braspag
+authorize	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.authorize(params = {})$/;"	singleton method	line:26	class:Braspag.CreditCard
+capture	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.capture(order_id)$/;"	singleton method	line:56	class:Braspag.CreditCard
+partial_capture	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.partial_capture(order_id, amount)$/;"	singleton method	line:79	class:Braspag.CreditCard
+void	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.void(order_id)$/;"	singleton method	line:103	class:Braspag.CreditCard
+info	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.info(order_id)$/;"	singleton method	line:126	class:Braspag.CreditCard
+status	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.status(order_id)$/;"	singleton method	line:146	class:Braspag.CreditCard
+save	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.save(params)$/;"	singleton method	line:171	class:Braspag.CreditCard
+get	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.get(just_click_key)$/;"	singleton method	line:177	class:Braspag.CreditCard
+just_click_shop	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^    def self.just_click_shop(params = {})$/;"	singleton method	line:183	class:Braspag.CreditCard
+check_params	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^      def check_params(params)$/;"	method	line:191	class:Braspag.CreditCard
+authorize_url	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^      def authorize_url$/;"	method	line:211	class:Braspag.CreditCard
+capture_url	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^      def capture_url$/;"	method	line:215	class:Braspag.CreditCard
+partial_capture_url	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^      def partial_capture_url$/;"	method	line:219	class:Braspag.CreditCard
+cancellation_url	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^      def cancellation_url$/;"	method	line:223	class:Braspag.CreditCard
+info_url	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^      def info_url$/;"	method	line:227	class:Braspag.CreditCard
+status_url	/home/alex/Projetos/braspag/lib/baby-braspag/credit_card.rb	/^      def status_url$/;"	method	line:232	class:Braspag.CreditCard
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/version.rb	/^module Braspag$/;"	module	line:1
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/connection.rb	/^module Braspag$/;"	module	line:1
+Connection	/home/alex/Projetos/braspag/lib/baby-braspag/connection.rb	/^  class Connection$/;"	class	line:2	class:Braspag
+initialize	/home/alex/Projetos/braspag/lib/baby-braspag/connection.rb	/^    def initialize$/;"	method	line:13	class:Braspag.Connection
+default_env_configuration	/home/alex/Projetos/braspag/lib/baby-braspag/connection.rb	/^    def default_env_configuration$/;"	method	line:29	class:Braspag.Connection
+production?	/home/alex/Projetos/braspag/lib/baby-braspag/connection.rb	/^    def production?$/;"	method	line:42	class:Braspag.Connection
+homologation?	/home/alex/Projetos/braspag/lib/baby-braspag/connection.rb	/^    def homologation?$/;"	method	line:46	class:Braspag.Connection
+savon_client	/home/alex/Projetos/braspag/lib/baby-braspag/connection.rb	/^    def savon_client(url, options = {})$/;"	method	line:50	class:Braspag.Connection
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/payment_method.rb	/^module Braspag$/;"	module	line:1
+PaymentMethod	/home/alex/Projetos/braspag/lib/baby-braspag/payment_method.rb	/^  class PaymentMethod$/;"	class	line:2	class:Braspag
+payment_method_from_id	/home/alex/Projetos/braspag/lib/baby-braspag/payment_method.rb	/^    def self.payment_method_from_id(code)$/;"	singleton method	line:37	class:Braspag.PaymentMethod
+normalize_params	/home/alex/Projetos/braspag/lib/baby-braspag/payment_method.rb	/^    def self.normalize_params(params)$/;"	singleton method	line:41	class:Braspag.PaymentMethod
+check_params	/home/alex/Projetos/braspag/lib/baby-braspag/payment_method.rb	/^    def self.check_params(params)$/;"	singleton method	line:49	class:Braspag.PaymentMethod
+valid_order_id	/home/alex/Projetos/braspag/lib/baby-braspag/payment_method.rb	/^    def self.valid_order_id?(order_id)$/;"	singleton method	line:69	class:Braspag.PaymentMethod
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^module Braspag$/;"	module	line:1
+Error	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class Error < Exception; end$/;"	class	line:2	class:Braspag
+InvalidConnection	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidConnection < Error ; end$/;"	class	line:3	class:Braspag
+InvalidMerchantId	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidMerchantId < Error ; end$/;"	class	line:4	class:Braspag
+InvalidConnection	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidConnection < Error ; end$/;"	class	line:5	class:Braspag
+IncompleteParams	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class IncompleteParams < Error ; end$/;"	class	line:6	class:Braspag
+InvalidOrderId	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidOrderId < Error ; end$/;"	class	line:7	class:Braspag
+InvalidCustomerName	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidCustomerName < Error ; end$/;"	class	line:8	class:Braspag
+InvalidCustomerId	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidCustomerId < Error ; end$/;"	class	line:9	class:Braspag
+InvalidNumber	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidNumber < Error ; end$/;"	class	line:10	class:Braspag
+InvalidInstructions	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidInstructions < Error ; end$/;"	class	line:11	class:Braspag
+InvalidExpirationDate	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidExpirationDate < Error ; end$/;"	class	line:12	class:Braspag
+InvalidStringFormat	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidStringFormat < Error ; end$/;"	class	line:13	class:Braspag
+InvalidPost	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidPost < Error ; end$/;"	class	line:14	class:Braspag
+InvalidPaymentMethod	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidPaymentMethod < Error ; end$/;"	class	line:15	class:Braspag
+InvalidAmount	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidAmount < Error ; end$/;"	class	line:16	class:Braspag
+InvalidInstallments	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidInstallments < Error ; end$/;"	class	line:17	class:Braspag
+InvalidHasInterest	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidHasInterest < Error ; end$/;"	class	line:18	class:Braspag
+InvalidIP	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidIP < Error; end$/;"	class	line:19	class:Braspag
+InvalidCryptKey	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidCryptKey < Error; end$/;"	class	line:20	class:Braspag
+InvalidEncryptedKey	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidEncryptedKey < Error; end$/;"	class	line:21	class:Braspag
+InvalidHolder	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidHolder < Error ; end$/;"	class	line:22	class:Braspag
+InvalidExpirationDate	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidExpirationDate < Error ; end$/;"	class	line:23	class:Braspag
+InvalidSecurityCode	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidSecurityCode < Error ; end$/;"	class	line:24	class:Braspag
+InvalidType	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidType < Error ; end$/;"	class	line:25	class:Braspag
+InvalidNumberPayments	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidNumberPayments < Error ; end$/;"	class	line:26	class:Braspag
+InvalidNumberInstallments	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidNumberInstallments < Error ; end$/;"	class	line:27	class:Braspag
+InvalidJustClickKey	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class InvalidJustClickKey < Error ; end$/;"	class	line:28	class:Braspag
+UnknownError	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class UnknownError < Error ; end$/;"	class	line:29	class:Braspag
+Connection	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class Connection$/;"	class	line:31	class:Braspag
+InvalidMerchantId	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^    class InvalidMerchantId < Error ; end$/;"	class	line:32	class:Braspag.Connection
+InvalidEnv	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^    class InvalidEnv < Error ; end$/;"	class	line:33	class:Braspag.Connection
+InvalidBraspagUrl	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^    class InvalidBraspagUrl < Error ; end$/;"	class	line:34	class:Braspag.Connection
+Order	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^  class Order$/;"	class	line:37	class:Braspag
+InvalidData	/home/alex/Projetos/braspag/lib/baby-braspag/errors.rb	/^    class InvalidData < Error; end$/;"	class	line:38	class:Braspag.Order
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^module Braspag$/;"	module	line:1
+ProtectedCreditCard	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^  class ProtectedCreditCard < PaymentMethod$/;"	class	line:2	class:Braspag
+save	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.save(params = {})$/;"	singleton method	line:29	class:Braspag.ProtectedCreditCard
+get	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.get(just_click_key)$/;"	singleton method	line:58	class:Braspag.ProtectedCreditCard
+just_click_shop	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.just_click_shop(params = {})$/;"	singleton method	line:80	class:Braspag.ProtectedCreditCard
+check_protected_card_params	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.check_protected_card_params(params)$/;"	singleton method	line:116	class:Braspag.ProtectedCreditCard
+check_just_click_shop_params	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.check_just_click_shop_params(params)$/;"	singleton method	line:135	class:Braspag.ProtectedCreditCard
+valid_just_click_key	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.valid_just_click_key?(just_click_key)$/;"	singleton method	line:149	class:Braspag.ProtectedCreditCard
+protected_card_url	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.protected_card_url$/;"	singleton method	line:153	class:Braspag.ProtectedCreditCard
+savon_client	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.savon_client(url)$/;"	singleton method	line:157	class:Braspag.ProtectedCreditCard
+redact_just_click_key	/home/alex/Projetos/braspag/lib/baby-braspag/protected_credit_card.rb	/^    def self.redact_just_click_key(response)$/;"	singleton method	line:171	class:Braspag.ProtectedCreditCard
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/order.rb	/^module Braspag$/;"	module	line:1
+Order	/home/alex/Projetos/braspag/lib/baby-braspag/order.rb	/^  class Order$/;"	class	line:2	class:Braspag
+status	/home/alex/Projetos/braspag/lib/baby-braspag/order.rb	/^    def self.status(order_id)$/;"	singleton method	line:6	class:Braspag.Order
+status_url	/home/alex/Projetos/braspag/lib/baby-braspag/order.rb	/^    def self.status_url$/;"	singleton method	line:37	class:Braspag.Order
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^module Braspag$/;"	module	line:3
+Bill	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^  class Bill < PaymentMethod$/;"	class	line:4	class:Braspag
+generate	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^    def self.generate(params)$/;"	singleton method	line:34	class:Braspag.Bill
+normalize_params	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^    def self.normalize_params(params)$/;"	singleton method	line:85	class:Braspag.Bill
+check_params	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^    def self.check_params(params)$/;"	singleton method	line:95	class:Braspag.Bill
+info_url	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^    def self.info_url$/;"	singleton method	line:117	class:Braspag.Bill
+creation_url	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^    def self.creation_url$/;"	singleton method	line:122	class:Braspag.Bill
+info	/home/alex/Projetos/braspag/lib/baby-braspag/bill.rb	/^    def self.info(order_id)$/;"	singleton method	line:126	class:Braspag.Bill
+Braspag	/home/alex/Projetos/braspag/lib/baby-braspag/poster.rb	/^module Braspag$/;"	module	line:1
+Poster	/home/alex/Projetos/braspag/lib/baby-braspag/poster.rb	/^  class Poster$/;"	class	line:2	class:Braspag
+initialize	/home/alex/Projetos/braspag/lib/baby-braspag/poster.rb	/^    def initialize(url)$/;"	method	line:3	class:Braspag.Poster
+do_post	/home/alex/Projetos/braspag/lib/baby-braspag/poster.rb	/^    def do_post(method, data)$/;"	method	line:7	class:Braspag.Poster
+configure_request	/home/alex/Projetos/braspag/lib/baby-braspag/poster.rb	/^    def configure_request$/;"	method	line:18	class:Braspag.Poster
+with_logger	/home/alex/Projetos/braspag/lib/baby-braspag/poster.rb	/^    def with_logger(method)$/;"	method	line:28	class:Braspag.Poster
+mask_data	/home/alex/Projetos/braspag/lib/baby-braspag/poster.rb	/^    def mask_data(data)$/;"	method	line:39	class:Braspag.Poster
+RELEASES	/home/alex/Projetos/braspag/RELEASES.md	/^# RELEASES$/;"	function	line:1
+0.4.1 - 07/07/2015	/home/alex/Projetos/braspag/RELEASES.md	/^## 0.4.1 - 07\/07\/2015$/;"	function	line:3
+0.2.1 - 11/08/2014	/home/alex/Projetos/braspag/RELEASES.md	/^## 0.2.1 - 11\/08\/2014$/;"	function	line:7
+For next release	/home/alex/Projetos/braspag/RELEASES.md	/^## For next release$/;"	function	line:11
+0.1.1 - 09/01/2012	/home/alex/Projetos/braspag/RELEASES.md	/^## 0.1.1 - 09\/01\/2012$/;"	function	line:15
+0.1.0 - 09/01/2012	/home/alex/Projetos/braspag/RELEASES.md	/^## 0.1.0 - 09\/01\/2012$/;"	function	line:20
+Baby Braspag	/home/alex/Projetos/braspag/README.md	/^# Baby Braspag$/;"	function	line:1
+How to install	/home/alex/Projetos/braspag/README.md	/^# How to install$/;"	function	line:7
+for Rails 3 app	/home/alex/Projetos/braspag/README.md	/^## for Rails 3 app$/;"	function	line:9
+Add on your Gemfile	/home/alex/Projetos/braspag/README.md	/^### Add on your Gemfile$/;"	function	line:11
+Create a config/braspag.yml file	/home/alex/Projetos/braspag/README.md	/^### Create a config\/braspag.yml file$/;"	function	line:15
+Set RACK_ENV (our suggest)	/home/alex/Projetos/braspag/README.md	/^### Set RACK_ENV (our suggest)$/;"	function	line:19
+Edit config/braspag.yml with your Braspag merchant_id	/home/alex/Projetos/braspag/README.md	/^### Edit config\/braspag.yml with your Braspag merchant_id$/;"	function	line:25
+Examples	/home/alex/Projetos/braspag/README.md	/^# Examples$/;"	function	line:27
+to create a Bill (Boleto/Bloqueto for brazilian guys)	/home/alex/Projetos/braspag/README.md	/^## to create a Bill (Boleto\/Bloqueto for brazilian guys)$/;"	function	line:29
+License	/home/alex/Projetos/braspag/README.md	/^# License$/;"	function	line:36
+SavonClientTest	/home/alex/Projetos/braspag/spec/protected_credit_card_spec.rb	/^  class SavonClientTest$/;"	class	line:179
+call	/home/alex/Projetos/braspag/spec/protected_credit_card_spec.rb	/^    def call(method, options, &block)$/;"	method	line:183	class:SavonClientTest
+options	/home/alex/Projetos/braspag/spec/protected_credit_card_spec.rb	/^    def options$/;"	method	line:190	class:SavonClientTest

@@ -2,29 +2,30 @@ require "bigdecimal"
 
 module Braspag
   class Bill < PaymentMethod
-
     PAYMENT_METHODS = {
-      :bradesco => "06",
-      :cef => "07",
-      :hsbc => "08",
-      :bb => "09",
-      :real => "10",
-      :citibank => "13",
-      :itau => "14",
-      :unibanco => "26"
+      bradesco: "06",
+      cef: "07",
+      hsbc: "08",
+      bb: "09",
+      real: "10",
+      citibank: "13",
+      itau: "14",
+      unibanco: "26",
+      santander: "24"
+
     }
 
     MAPPING = {
-      :merchant_id => "merchantId",
-      :order_id => "orderId",
-      :customer_name => "customerName",
-      :customer_id => "customerIdNumber",
-      :amount => "amount",
-      :payment_method => "paymentMethod",
-      :number => "boletoNumber",
-      :instructions => "instructions",
-      :expiration_date => "expirationDate",
-      :emails => "emails"
+      merchant_id: "merchantId",
+      order_id: "orderId",
+      customer_name: "customerName",
+      customer_id: "customerIdNumber",
+      amount: "amount",
+      payment_method: "paymentMethod",
+      number: "boletoNumber",
+      instructions: "instructions",
+      expiration_date: "expirationDate",
+      emails: "emails"
     }
 
     PRODUCTION_INFO_URI   = "/webservices/pagador/pedido.asmx/GetDadosBoleto"
@@ -35,8 +36,8 @@ module Braspag
       connection = Braspag::Connection.instance
       params[:merchant_id] = connection.merchant_id
 
-      params = self.normalize_params(params)
-      self.check_params(params)
+      params = normalize_params(params)
+      check_params(params)
 
       data = {}
 
@@ -51,31 +52,29 @@ module Braspag
         end
       end
 
-      request = ::HTTPI::Request.new(self.creation_url)
+      request = ::HTTPI::Request.new(creation_url)
       request.body = data
 
-      response = Utils::convert_to_map(::HTTPI.post(request).body,
-        {
-          :url => nil,
-          :amount => nil,
-          :number => "boletoNumber",
-          :expiration_date => Proc.new { |document|
-            begin
-              Date.parse(document.search("expirationDate").first.to_s)
-            rescue
-              nil
-            end
-          },
-          :return_code => "returnCode",
-          :status => nil,
-          :message => nil
-        })
+      response = Utils.convert_to_map(::HTTPI.post(request).body,
+                                      url: nil,
+                                      amount: nil,
+                                      number: "boletoNumber",
+                                      expiration_date: proc do |document|
+                                        begin
+                                          Date.parse(document.search("expirationDate").first.to_s)
+                                        rescue
+                                          nil
+                                        end
+                                      end,
+                                      return_code: "returnCode",
+                                      status: nil,
+                                      message: nil)
 
-      raise InvalidMerchantId if response[:message] == "Invalid merchantId"
-      raise InvalidAmount if response[:message] == "Invalid purchase amount"
-      raise InvalidPaymentMethod if response[:message] == "Invalid payment method"
-      raise InvalidStringFormat if response[:message] == "Input string was not in a correct format."
-      raise UnknownError if response[:status].nil?
+      fail InvalidMerchantId if response[:message] == "Invalid merchantId"
+      fail InvalidAmount if response[:message] == "Invalid purchase amount"
+      fail InvalidPaymentMethod if response[:message] == "Invalid payment method"
+      fail InvalidStringFormat if response[:message] == "Input string was not in a correct format."
+      fail UnknownError if response[:status].nil?
 
       response[:amount] = BigDecimal.new(response[:amount])
 
@@ -96,16 +95,16 @@ module Braspag
       super
 
       if params[:number]
-        raise InvalidNumber unless (1..255).include?(params[:number].to_s.size)
+        fail InvalidNumber unless (1..255).include?(params[:number].to_s.size)
       end
 
       if params[:instructions]
-        raise InvalidInstructions unless (1..512).include?(params[:instructions].to_s.size)
+        fail InvalidInstructions unless (1..512).include?(params[:instructions].to_s.size)
       end
 
       if params[:expiration_date]
         matches = params[:expiration_date].to_s.match /(\d{2})\/(\d{2})\/(\d{2})/
-        raise InvalidExpirationDate unless matches
+        fail InvalidExpirationDate unless matches
         begin
           Date.new(matches[3].to_i, matches[2].to_i, matches[1].to_i)
         rescue ArgumentError
@@ -126,34 +125,32 @@ module Braspag
     def self.info(order_id)
       connection = Braspag::Connection.instance
 
-      raise InvalidOrderId unless self.valid_order_id?(order_id)
+      fail InvalidOrderId unless self.valid_order_id?(order_id)
 
-      request = ::HTTPI::Request.new(self.info_url)
+      request = ::HTTPI::Request.new(info_url)
       request.body = {
-        :loja => connection.merchant_id,
-        :numeroPedido => order_id.to_s
+        loja: connection.merchant_id,
+        numeroPedido: order_id.to_s
       }
 
       response = ::HTTPI.post(request)
 
-      response = Utils::convert_to_map(response.body, {
-          :document_number => "NumeroDocumento",
-          :payer => "Sacado",
-          :our_number => "NossoNumero",
-          :bill_line => "LinhaDigitavel",
-          :document_date => "DataDocumento",
-          :expiration_date => "DataVencimento",
-          :receiver => "Cedente",
-          :bank => "Banco",
-          :agency => "Agencia",
-          :account => "Conta",
-          :wallet => "Carteira",
-          :amount => "ValorDocumento",
-          :amount_invoice => "ValorPago",
-          :invoice_date => "DataCredito"
-        })
+      response = Utils.convert_to_map(response.body,           document_number: "NumeroDocumento",
+                                                               payer: "Sacado",
+                                                               our_number: "NossoNumero",
+                                                               bill_line: "LinhaDigitavel",
+                                                               document_date: "DataDocumento",
+                                                               expiration_date: "DataVencimento",
+                                                               receiver: "Cedente",
+                                                               bank: "Banco",
+                                                               agency: "Agencia",
+                                                               account: "Conta",
+                                                               wallet: "Carteira",
+                                                               amount: "ValorDocumento",
+                                                               amount_invoice: "ValorPago",
+                                                               invoice_date: "DataCredito")
 
-      raise UnknownError if response[:document_number].nil?
+      fail UnknownError if response[:document_number].nil?
       response
     end
   end
