@@ -11,7 +11,7 @@ module Braspag
       citibank: "13",
       itau: "14",
       unibanco: "26",
-      santander: "24"
+      santander: "124"
 
     }
 
