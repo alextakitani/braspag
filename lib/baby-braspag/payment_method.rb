@@ -2,7 +2,8 @@ module Braspag
   class PaymentMethod
     PAYMENT_METHODS = {
       # BRASIL
-      :amex_2p                  => 18,  # American Express 2 Party
+      #:amex_2p                  => 18,  # American Express 2 Party
+      :amex_2p                  => 182,  # American Express 2 Party
       :cielo_noauth_visa        => 71,  # Cielo webservice captura automática sem autenticação - Visa
       :cielo_preauth_visa       => 73,  # Cielo webservice preauth sem autenticação - Visa
       :cielo_noauth_mastercard  => 120, # Cielo webservice captura automática sem autenticação - Mastercard
