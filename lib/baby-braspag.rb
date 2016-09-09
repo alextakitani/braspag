@@ -18,6 +18,13 @@ require 'baby-braspag/errors'
 require 'baby-braspag/utils'
 require 'baby-braspag/order'
 
+begin
+  require 'pry-byebug'
+  require "awesome_print"
+rescue LoadError
+end
+
+
 module Braspag
   def self.logger=(value)
     @logger = value

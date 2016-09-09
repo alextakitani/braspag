@@ -54,6 +54,8 @@ module Braspag
         end
       end
 
+      binding.pry
+
       request = ::HTTPI::Request.new(creation_url)
       request.body = data
 
