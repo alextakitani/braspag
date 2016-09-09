@@ -20,6 +20,8 @@ module Braspag
       order_id: "orderId",
       customer_name: "customerName",
       customer_id: "customerIdNumber",
+      customer_identity: "customerIdentity",
+      customer_identity_type: "customerIdentityType",
       amount: "amount",
       payment_method: "paymentMethod",
       number: "boletoNumber",
