@@ -20,8 +20,6 @@ module Braspag
       order_id: "orderId",
       customer_name: "customerName",
       customer_id: "customerIdNumber",
-      customer_identity: "customerIdentity",
-      customer_identity_type: "customerIdentityType",
       amount: "amount",
       payment_method: "paymentMethod",
       number: "boletoNumber",
@@ -53,8 +51,6 @@ module Braspag
           data[v] = params[k] || ""
         end
       end
-
-      binding.pry
 
       request = ::HTTPI::Request.new(creation_url)
       request.body = data
